@@ -16,7 +16,7 @@ export default function CTASection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
             {/* For Sellers */}
             <Link 
-              href="/sellers"
+              href="/for-sellers"
               className="group block p-8 bg-white rounded-2xl border border-slate-200 hover:border-primary hover:shadow-lg transition-all duration-200 text-left"
             >
               <div className="flex items-center mb-4">
@@ -28,7 +28,7 @@ export default function CTASection() {
               <p className="text-slate-600 mb-6">
                 Browse real buyer demand in your area and connect directly with interested buyers.
               </p>
-              <div className="flex items-center text-primary font-medium group-hover:text-[#1658D1] transition-colors">
+              <div className="flex items-center text-primary font-medium group-hover:text-[#7A9A3A] transition-colors">
                 Start browsing demand
                 <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -38,7 +38,7 @@ export default function CTASection() {
 
             {/* For Buyers */}
             <Link 
-              href="/buyers"
+              href="/for-buyers"
               className="group block p-8 bg-white rounded-2xl border border-slate-200 hover:border-accent hover:shadow-lg transition-all duration-200 text-left"
             >
               <div className="flex items-center mb-4">
@@ -50,7 +50,7 @@ export default function CTASection() {
               <p className="text-slate-600 mb-6">
                 Post your property brief and let sellers find you. No more cold calling or endless searching.
               </p>
-              <div className="flex items-center text-accent font-medium group-hover:text-[#00A085] transition-colors">
+              <div className="flex items-center text-accent font-medium group-hover:text-[#D18B4A] transition-colors">
                 Post your brief
                 <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

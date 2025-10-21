@@ -21,13 +21,13 @@ export default function Navbar() {
               Browse
             </Link>
             <Link 
-              href="/buyers" 
+              href="/for-buyers" 
               className="text-slate-600 hover:text-dark transition-colors font-medium"
             >
               For Buyers
             </Link>
             <Link 
-              href="/sellers" 
+              href="/for-sellers" 
               className="text-slate-600 hover:text-dark transition-colors font-medium"
             >
               For Sellers
