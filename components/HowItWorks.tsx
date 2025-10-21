@@ -4,20 +4,20 @@ const steps = [
   {
     number: 1,
     icon: FileText,
-    title: 'Buyers post their brief',
-    description: 'Budget, bedrooms, areas'
+    title: 'Post privately',
+    description: 'Share what you\'re looking for or what you might sell'
   },
   {
     number: 2,
     icon: Search,
-    title: 'Sellers search by postcode',
-    description: 'See real demand nearby'
+    title: 'Get matched',
+    description: 'See real demand and potential buyers in your area'
   },
   {
     number: 3,
     icon: Mail,
-    title: 'Connect via secure email relay',
-    description: 'No phone numbers shown'
+    title: 'Connect securely',
+    description: 'Chat via email relay, no public listings or spam'
   }
 ]
 

@@ -46,15 +46,11 @@ const benefits = [
 const faqs = [
   {
     question: 'Do I need an estate agent?',
-    answer: 'No — you can contact buyers directly. NestFinder connects you with verified buyers in your area, eliminating the need for traditional estate agents and their fees.'
+    answer: 'No — you can contact buyers privately. NestFinder connects you with verified buyers in your area, eliminating the need for traditional estate agents and their fees.'
   },
   {
     question: 'Is it free?',
     answer: 'Yes, posting and browsing are free while we\'re in beta. You can search buyer demand and contact interested buyers at no cost.'
-  },
-  {
-    question: 'How do I know buyers are genuine?',
-    answer: 'All buyers are verified through our email system. We use secure email relay to protect both parties while ensuring genuine interest.'
   }
 ]
 
@@ -66,18 +62,18 @@ export default function ForSellersPage() {
         <div className="container-custom">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="heading-primary mb-6">
-              See real buyer demand in your postcode.
+              See real buyers — before you list.
             </h1>
             
             <p className="subheading max-w-2xl mx-auto mb-8">
-              Browse live briefs and connect directly — fewer middlemen.
+              Join the pre-market. Connect privately, sell faster, skip the noise.
             </p>
 
             <Link
               href="/market"
               className="btn-primary text-lg px-8 py-4 inline-flex items-center"
             >
-              Browse buyer demand
+              Explore your area
               <Search className="w-5 h-5 ml-2" />
             </Link>
           </div>
@@ -214,7 +210,7 @@ export default function ForSellersPage() {
               Ready to see buyer demand in your area?
             </h2>
             <p className="text-lg text-slate-600 mb-8">
-              Start browsing buyer interest and connect directly with potential buyers
+              Start browsing buyer interest and connect privately with potential buyers
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -222,7 +218,7 @@ export default function ForSellersPage() {
                 href="/market"
                 className="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center"
               >
-                Browse buyer demand
+                Explore pre-market demand
                 <Search className="w-5 h-5 ml-2" />
               </Link>
               

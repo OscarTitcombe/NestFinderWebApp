@@ -18,7 +18,7 @@ export default function Navbar() {
               href="/market" 
               className="text-slate-600 hover:text-dark transition-colors font-medium"
             >
-              Browse
+              Explore pre-market
             </Link>
             <Link 
               href="/for-buyers" 

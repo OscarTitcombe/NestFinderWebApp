@@ -7,17 +7,20 @@ export default function Hero() {
         <div className="text-center max-w-4xl mx-auto">
           {/* Main Headline */}
           <h1 className="heading-primary">
-            See who's buying in your area.
+            Anonymous. Pre-market. House-hunting.
           </h1>
           
           {/* Subheading */}
-          <p className="subheading max-w-2xl mx-auto">
-            Buyers post what they want. Sellers browse demand and connect directly — fewer middlemen.
-          </p>
+          <div className="subheading max-w-2xl mx-auto">
+            <p>Find real buyers before you list — or sellers before they go live.</p>
+            <p>NestFinder connects people quietly, before the market does.</p>
+          </div>
 
           {/* Postcode Search */}
           <div className="mt-12">
-            <PostcodeSearch />
+            <PostcodeSearch 
+              buttonLabel="Explore your area"
+            />
           </div>
         </div>
       </div>

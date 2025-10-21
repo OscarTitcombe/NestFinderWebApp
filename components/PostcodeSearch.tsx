@@ -12,7 +12,7 @@ interface PostcodeSearchProps {
 }
 
 export default function PostcodeSearch({ 
-  buttonLabel = "Browse buyer interest",
+  buttonLabel = "Explore pre-market demand",
   placeholder = "Enter postcode (e.g., SW1A)",
   showHelperText = true,
   className = ""

@@ -5,32 +5,28 @@ const features = [
     icon: Home,
     title: 'For Sellers',
     bullets: [
-      'Spot real demand by postcode',
-      'Message buyers who fit your property'
+      'See who\'s already looking for a home like yours — before you list'
     ]
   },
   {
     icon: Share2,
     title: 'For Buyers',
     bullets: [
-      'Post your brief once',
-      'Let sellers come to you'
+      'Tell us what you\'re searching for and get matched with off-market sellers'
     ]
   },
   {
     icon: MapPin,
-    title: 'Simple Matching',
+    title: 'Anonymous connections',
     bullets: [
-      'Filters by budget, beds, and type',
-      'Save time on cold outreach'
+      'Your contact details stay private until you choose to share'
     ]
   },
   {
     icon: Shield,
-    title: 'Privacy-first',
+    title: 'Smart matching',
     bullets: [
-      'Email relay protects your details',
-      'No spam, no phone sharing'
+      'We score every match by location, price, and type — so you only see what fits'
     ]
   }
 ]

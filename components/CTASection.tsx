@@ -7,10 +7,10 @@ export default function CTASection() {
       <div className="container-custom">
         <div className="text-center max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-dark mb-4">
-            Ready to get started?
+            Check pre-market demand near you.
           </h2>
-          <p className="text-lg text-slate-600 mb-12">
-            Choose your path to connect in the property market
+          <p className="text-sm text-slate-500 mb-12">
+            Find out who's looking — before everyone else does.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -26,10 +26,10 @@ export default function CTASection() {
                 <h3 className="text-xl font-semibold text-dark">For Sellers</h3>
               </div>
               <p className="text-slate-600 mb-6">
-                Browse real buyer demand in your area and connect directly with interested buyers.
+                Browse real buyer demand in your area and connect privately with interested buyers.
               </p>
               <div className="flex items-center text-primary font-medium group-hover:text-[#7A9A3A] transition-colors">
-                Start browsing demand
+                Explore pre-market demand
                 <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -51,7 +51,7 @@ export default function CTASection() {
                 Post your property brief and let sellers find you. No more cold calling or endless searching.
               </p>
               <div className="flex items-center text-accent font-medium group-hover:text-[#D18B4A] transition-colors">
-                Post your brief
+                Create your private brief
                 <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>

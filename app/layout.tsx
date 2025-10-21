@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'NestFinder - See who\'s buying in your area',
-  description: 'Buyers post what they want. Sellers browse demand and connect directly — fewer middlemen.',
+  title: 'NestFinder — Anonymous, pre-market house-hunting',
+  description: 'Find real buyers before you list — or sellers before they go live. Anonymous matches, private intros, off-market first.',
 }
 
 export default function RootLayout({

@@ -3,18 +3,18 @@ import { TrendingUp, Users, Shield } from 'lucide-react'
 const trustItems = [
   {
     icon: TrendingUp,
-    label: 'Demand-first',
-    description: 'See real buyer interest'
+    label: 'Private by default',
+    description: 'No spam, no agents'
   },
   {
     icon: Users,
-    label: 'Direct connections',
-    description: 'Connect without middlemen'
+    label: 'Real demand',
+    description: 'Every brief is verified'
   },
   {
     icon: Shield,
-    label: 'Free to start',
-    description: 'No upfront costs'
+    label: 'Off-market first',
+    description: 'Discover homes before they\'re public'
   }
 ]
 

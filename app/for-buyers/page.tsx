@@ -51,18 +51,18 @@ export default function ForBuyersPage() {
         <div className="container-custom">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="heading-primary mb-6">
-              Tell us what you're looking for.
+              House-hunt anonymously.
             </h1>
             
             <p className="subheading max-w-2xl mx-auto mb-8">
-              Post your brief once. Let the right sellers find you.
+              Post your brief and get matched with off-market sellers — before listings go public.
             </p>
 
             <Link
               href="/buy"
               className="btn-primary text-lg px-8 py-4 inline-flex items-center"
             >
-              Post your brief
+              Create your private brief
               <FileText className="w-5 h-5 ml-2" />
             </Link>
           </div>
@@ -173,7 +173,7 @@ export default function ForBuyersPage() {
                 href="/buy"
                 className="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center"
               >
-                Post your brief
+                Create your private brief
                 <FileText className="w-5 h-5 ml-2" />
               </Link>
               
@@ -181,7 +181,7 @@ export default function ForBuyersPage() {
                 href="/market"
                 className="inline-flex items-center justify-center px-8 py-4 text-primary border border-primary rounded-xl hover:bg-primary/5 transition-colors"
               >
-                Browse market
+                Explore pre-market
                 <Home className="w-5 h-5 ml-2" />
               </Link>
             </div>
