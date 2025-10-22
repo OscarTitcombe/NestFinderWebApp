@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 interface QuizAnswers {
   propertyType: string
@@ -143,13 +143,6 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
     }
   }
 
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1)
-    } else {
-      onBack()
-    }
-  }
 
   const canProceed = () => {
     const step = steps[currentStep]
@@ -170,7 +163,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
       <div className="w-full max-w-4xl mx-auto">
           {/* Progress Bar */}
           <div className="mb-6 sm:mb-8">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 max-w-2xl mx-auto">
               <span className="text-xs sm:text-sm font-medium text-slate-600">
                 Step {currentStep + 1} of {steps.length}
               </span>
@@ -178,7 +171,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
                 {Math.round(((currentStep + 1) / steps.length) * 100)}% complete
               </span>
             </div>
-            <div className="w-full bg-slate-200 rounded-full h-2">
+            <div className="w-full max-w-2xl mx-auto bg-slate-200 rounded-full h-2">
               <div 
                 className="bg-primary h-2 rounded-full transition-all duration-300"
                 style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
@@ -233,38 +226,26 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
           </div>
 
           {/* Navigation */}
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 sm:gap-0">
+          <div className="flex flex-col sm:flex-row justify-center sm:justify-end items-center gap-4">
             <button
-              onClick={handleBack}
-              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 text-slate-600 hover:text-slate-800 transition-colors rounded-lg hover:bg-slate-50 min-h-[48px]"
+              onClick={handleSkip}
+              className="px-6 py-3 text-slate-500 hover:text-slate-700 transition-colors font-medium rounded-lg hover:bg-slate-50 min-h-[48px] text-sm sm:text-base"
             >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="text-sm sm:text-base">
-                {currentStep === 0 ? 'Back to postcode' : 'Previous'}
-              </span>
+              Skip
             </button>
-
-            <div className="flex items-center gap-3 sm:gap-4">
-              <button
-                onClick={handleSkip}
-                className="px-4 sm:px-6 py-3 text-slate-500 hover:text-slate-700 transition-colors font-medium rounded-lg hover:bg-slate-50 min-h-[48px] text-sm sm:text-base"
-              >
-                Skip
-              </button>
-              
-              <button
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-lg font-medium transition-all min-h-[48px] text-sm sm:text-base ${
-                  canProceed()
-                    ? 'bg-primary text-white hover:bg-primary/90 shadow-lg active:scale-[0.98]'
-                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                }`}
-              >
-                <span>{currentStep === steps.length - 1 ? 'Find buyers' : 'Next'}</span>
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+            
+            <button
+              onClick={handleNext}
+              disabled={!canProceed()}
+              className={`flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-medium transition-all min-h-[48px] text-sm sm:text-base ${
+                canProceed()
+                  ? 'bg-primary text-white hover:bg-primary/90 shadow-lg active:scale-[0.98]'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              <span>{currentStep === steps.length - 1 ? 'Find buyers' : 'Next'}</span>
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
       </div>
     </div>
