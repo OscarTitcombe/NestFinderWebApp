@@ -85,36 +85,29 @@ export default function ForBuyersPage() {
             {steps.map((step, index) => {
               const IconComponent = step.icon
               return (
-                <div key={index} className="text-center">
-                  <div className="relative">
-                    {/* Step Number */}
-                    <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6 relative z-10">
-                      {step.number}
-                    </div>
-                    
-                    {/* Connecting Line (hidden on last item) */}
-                    {index < steps.length - 1 && (
-                      <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-slate-200 -z-10">
-                        <div className="absolute right-0 top-0 w-1/2 h-full bg-primary"></div>
-                      </div>
-                    )}
-                  </div>
-
+                <div key={index} className="text-center flex flex-col h-full">
                   {/* Icon */}
                   <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <IconComponent className="w-6 h-6 text-primary" />
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-xl font-semibold text-dark mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-primary font-medium mb-2">
-                    {step.description}
-                  </p>
-                  <p className="text-slate-600 text-sm">
-                    {step.details}
-                  </p>
+                  <div className="flex-grow">
+                    <h3 className="text-xl font-semibold text-dark mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-primary font-medium mb-2">
+                      {step.description}
+                    </p>
+                    <p className="text-slate-600 text-sm">
+                      {step.details}
+                    </p>
+                  </div>
+
+                  {/* Step Number - Fixed at bottom */}
+                  <div className="w-16 h-16 bg-primary/80 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mt-6">
+                    {step.number}
+                  </div>
                 </div>
               )
             })}

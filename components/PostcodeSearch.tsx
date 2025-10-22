@@ -35,8 +35,8 @@ export default function PostcodeSearch({
         return
       }
 
-      // Navigate to market page with normalized postcode
-      router.push(`/market?postcode=${encodeURIComponent(result.district!)}`)
+      // Navigate to quiz page with normalized postcode
+      router.push(`/quiz?postcode=${encodeURIComponent(result.district!)}`)
     } catch (err) {
       setError('Something went wrong. Please try again.')
     } finally {

@@ -7,7 +7,7 @@ export default function Hero() {
         <div className="text-center max-w-4xl mx-auto">
           {/* Main Headline */}
           <h1 className="heading-primary">
-            Anonymous. Pre-market. House-hunting.
+            Private, pre-market, home discovery
           </h1>
           
           {/* Subheading */}

@@ -10,13 +10,53 @@ interface FilterBarProps {
     beds: number
     propertyType: string
   }) => void
+  initialValues?: {
+    propertyType: string
+    budget: string
+    bedrooms: string
+    timeframe: string
+    features: string[]
+  } | null
 }
 
-export default function FilterBar({ onFilterChange }: FilterBarProps) {
-  const [minBudget, setMinBudget] = useState(0)
-  const [maxBudget, setMaxBudget] = useState(1000000)
-  const [beds, setBeds] = useState(1)
-  const [propertyType, setPropertyType] = useState('Any')
+export default function FilterBar({ onFilterChange, initialValues }: FilterBarProps) {
+  // Helper function to convert quiz budget to filter values
+  const getBudgetRange = (budget: string) => {
+    switch (budget) {
+      case 'under-300k': return { min: 0, max: 300000 }
+      case '300k-500k': return { min: 300000, max: 500000 }
+      case '500k-750k': return { min: 500000, max: 750000 }
+      case '750k-1m': return { min: 750000, max: 1000000 }
+      case 'over-1m': return { min: 1000000, max: 2000000 }
+      case 'any-budget': return { min: 0, max: 2000000 }
+      default: return { min: 0, max: 1000000 }
+    }
+  }
+
+  // Helper function to convert quiz bedrooms to filter value
+  const getBedrooms = (bedrooms: string) => {
+    return parseInt(bedrooms) || 0
+  }
+
+  // Helper function to convert quiz property type to filter value
+  const getPropertyType = (type: string) => {
+    switch (type) {
+      case 'house': return 'House'
+      case 'flat': return 'Flat'
+      case 'bungalow': return 'Bungalow'
+      case 'any': return 'Any'
+      default: return 'Any'
+    }
+  }
+
+  const initialBudget = initialValues ? getBudgetRange(initialValues.budget) : { min: 0, max: 1000000 }
+  const initialBeds = initialValues ? getBedrooms(initialValues.bedrooms) : 0
+  const initialPropertyType = initialValues ? getPropertyType(initialValues.propertyType) : 'Any'
+
+  const [minBudget, setMinBudget] = useState(initialBudget.min)
+  const [maxBudget, setMaxBudget] = useState(initialBudget.max)
+  const [beds, setBeds] = useState(initialBeds)
+  const [propertyType, setPropertyType] = useState(initialPropertyType)
 
   useEffect(() => {
     onFilterChange({
@@ -84,6 +124,7 @@ export default function FilterBar({ onFilterChange }: FilterBarProps) {
             <option value={500000}>£500k</option>
             <option value={600000}>£600k</option>
             <option value={700000}>£700k</option>
+            <option value={750000}>£750k</option>
             <option value={800000}>£800k</option>
             <option value={900000}>£900k</option>
             <option value={1000000}>£1M</option>
@@ -104,11 +145,12 @@ export default function FilterBar({ onFilterChange }: FilterBarProps) {
             className="input-primary text-sm"
             aria-label="Number of bedrooms"
           >
-            <option value={1}>1+ beds</option>
-            <option value={2}>2+ beds</option>
-            <option value={3}>3+ beds</option>
-            <option value={4}>4+ beds</option>
-            <option value={5}>5+ beds</option>
+            <option value={0}>Any</option>
+            <option value={1}>1 bed</option>
+            <option value={2}>2 beds</option>
+            <option value={3}>3 beds</option>
+            <option value={4}>4 beds</option>
+            <option value={5}>5 beds</option>
           </select>
         </div>
 

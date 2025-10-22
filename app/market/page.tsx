@@ -110,14 +110,38 @@ export default function MarketPage() {
   const [filteredBuyers, setFilteredBuyers] = useState<Buyer[]>(mockBuyers)
   const [selectedBuyer, setSelectedBuyer] = useState<Buyer | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [quizAnswers, setQuizAnswers] = useState<{
+    propertyType: string
+    budget: string
+    bedrooms: string
+    timeframe: string
+    features: string[]
+  } | null>(null)
 
   useEffect(() => {
     const postcodeParam = searchParams.get('postcode')
+    const propertyType = searchParams.get('propertyType')
+    const budget = searchParams.get('budget')
+    const bedrooms = searchParams.get('bedrooms')
+    const timeframe = searchParams.get('timeframe')
+    const features = searchParams.get('features')
+
     if (postcodeParam) {
       const result = normalizePostcode(postcodeParam)
       if (result.ok && result.district) {
         setPostcode(postcodeParam)
         setNormalizedPostcode(result.district)
+        
+        // Set quiz answers if they exist
+        if (propertyType && budget && bedrooms && timeframe && features) {
+          setQuizAnswers({
+            propertyType,
+            budget,
+            bedrooms,
+            timeframe,
+            features: features.split(',')
+          })
+        }
       }
     }
   }, [searchParams])
@@ -132,8 +156,7 @@ export default function MarketPage() {
       return (
         buyer.budget >= filters.minBudget &&
         buyer.budget <= filters.maxBudget &&
-        buyer.minBeds <= filters.beds &&
-        buyer.maxBeds >= filters.beds &&
+        (filters.beds === 0 || (buyer.minBeds <= filters.beds && buyer.maxBeds >= filters.beds)) &&
         (filters.propertyType === 'Any' || buyer.propertyType === filters.propertyType)
       )
     })
@@ -191,7 +214,10 @@ export default function MarketPage() {
       {/* Filter Bar */}
       <div className="bg-white border-b border-slate-200">
         <div className="container-custom py-6">
-          <FilterBar onFilterChange={handleFilterChange} />
+          <FilterBar 
+            onFilterChange={handleFilterChange} 
+            initialValues={quizAnswers}
+          />
         </div>
       </div>
 
