@@ -89,7 +89,7 @@ export default function CalculatingScreen({
       <div className="container-custom max-w-2xl text-center">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-dark mb-4">
+            <h1 className="quiz-title mb-4">
               Finding buyers in your area
             </h1>
           </div>

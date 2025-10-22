@@ -188,7 +188,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
 
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-dark mb-4">
+            <h1 className="quiz-title mb-4">
               {currentStepData.title}
             </h1>
           </div>
