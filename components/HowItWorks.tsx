@@ -1,3 +1,6 @@
+'use client'
+
+import { motion } from 'framer-motion'
 import { FileText, Search, Mail } from 'lucide-react'
 
 const steps = [
@@ -23,44 +26,55 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="py-16 bg-white">
-      <div className="container-custom">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-dark mb-4">
+    <section className="py-16 sm:py-20 lg:py-24 bg-white">
+      <div className="nf-container">
+        <motion.div 
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#101314] mb-4">
             How it works
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Three simple steps to connect buyers and sellers
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {steps.map((step, index) => {
-            const IconComponent = step.icon
-            return (
-              <div key={index} className="text-center flex flex-col h-full">
-                {/* Icon */}
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <IconComponent className="w-6 h-6 text-primary" />
-                </div>
-
-                {/* Content */}
-                <div className="flex-grow">
-                  <h3 className="text-xl font-semibold text-dark mb-2">
+        <div className="relative">
+          {/* Connecting line for desktop */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-10 w-full max-w-4xl h-px bg-slate-200 hidden md:block"></div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {steps.map((step, index) => {
+              const IconComponent = step.icon
+              return (
+                <motion.div 
+                  key={index} 
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.25 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  className="text-center"
+                >
+                  {/* Number badge */}
+                  <div className="h-10 w-10 rounded-full bg-[#B2BEA4]/20 text-[#2B3135] flex items-center justify-center font-semibold mb-3 mx-auto">
+                    {step.number}
+                  </div>
+                  
+                  {/* Content */}
+                  <h3 className="font-semibold text-[#101314] mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-slate-600">
+                  <p className="text-sm text-slate-600">
                     {step.description}
                   </p>
-                </div>
-
-                {/* Step Number - Fixed at bottom */}
-                <div className="w-16 h-16 bg-primary/80 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mt-6">
-                  {step.number}
-                </div>
-              </div>
-            )
-          })}
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
       </div>
     </section>

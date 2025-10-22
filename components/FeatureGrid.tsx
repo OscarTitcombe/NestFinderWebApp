@@ -1,3 +1,6 @@
+'use client'
+
+import { motion } from 'framer-motion'
 import { Home, Share2, Shield, MapPin } from 'lucide-react'
 
 const features = [
@@ -33,39 +36,51 @@ const features = [
 
 export default function FeatureGrid() {
   return (
-    <section className="py-16 section-light">
-      <div className="container-custom">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-dark mb-4">
+    <section className="py-16 sm:py-20 lg:py-24 bg-[#F7F9FC]">
+      <div className="nf-container">
+        <motion.div 
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#101314] mb-4">
             How NestFinder works
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             A new way to connect buyers and sellers in the property market
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {features.map((feature, index) => {
             const IconComponent = feature.icon
             return (
-              <div key={index} className="card group hover:shadow-lg transition-all duration-200">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    <IconComponent className="w-6 h-6 text-primary" />
+              <motion.div 
+                key={index} 
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition"
+              >
+                <div className="flex items-start space-x-4">
+                  {/* Icon pill */}
+                  <div className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-[#F7F9FC] text-primary mb-3 flex-shrink-0">
+                    <IconComponent className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-semibold text-dark mb-3">
-                    {feature.title}
-                  </h3>
-                  <ul className="space-y-2">
-                    {feature.bullets.map((bullet, bulletIndex) => (
-                      <li key={bulletIndex} className="text-sm text-slate-600 flex items-start">
-                        <span className="text-primary mr-2">•</span>
-                        {bullet}
-                      </li>
-                    ))}
-                  </ul>
+                  
+                  <div className="flex-1">
+                    <h3 className="font-medium text-[#101314] mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-slate-600">
+                      {feature.bullets[0]}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>

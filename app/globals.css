@@ -21,17 +21,21 @@
 }
 
 @layer components {
+  .nf-container {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
   .container-custom {
     @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
   .heading-primary {
-    @apply text-4xl sm:text-5xl tracking-tight text-dark;
+    @apply text-4xl sm:text-5xl tracking-tight text-[#101314];
     font-weight: 800;
   }
   
   .quiz-title {
-    @apply text-3xl text-dark;
+    @apply text-3xl text-[#101314];
     font-weight: 800;
   }
   
@@ -40,7 +44,11 @@
   }
   
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 text-white bg-primary hover:bg-[#7A9A3A] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-white bg-primary hover:bg-[#7A9A3A] shadow-sm hover:shadow transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none;
+  }
+  
+  .btn-secondary-ghost {
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-[#101314] border border-slate-300 hover:bg-slate-50 transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none;
   }
   
   .input-primary {
@@ -52,7 +60,7 @@
   }
   
   .section-light {
-    @apply bg-light;
+    @apply bg-[#F7F9FC];
   }
   
   .line-clamp-3 {

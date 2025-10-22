@@ -88,65 +88,23 @@ export default function CalculatingScreen({
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-12">
       <div className="container-custom max-w-2xl text-center">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-12">
             <h1 className="quiz-title mb-4">
               Finding buyers in your area
             </h1>
           </div>
 
-          {/* Animated Icon */}
+          {/* Main Progress Bar */}
           <div className="mb-8">
-            <div className="relative w-24 h-24 mx-auto mb-4">
-              <div className="absolute inset-0 rounded-full border-4 border-primary/20"></div>
-              <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <IconComponent className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-          </div>
-
-          {/* Current Step */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-dark mb-2">
-              {currentStepData.title}
-            </h2>
-            <p className="text-slate-600">
-              {currentStepData.description}
-            </p>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-600">
-                {Math.round(progress)}% complete
-              </span>
-              <span className="text-sm text-slate-500">
-                Step {currentStep + 1} of {steps.length}
-              </span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-3">
+            <div className="w-full bg-slate-200 rounded-full h-4 mb-4">
               <div 
-                className="bg-gradient-to-r from-primary to-primary/80 h-3 rounded-full transition-all duration-100 ease-out"
+                className="bg-primary h-4 rounded-full transition-all duration-100 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-          </div>
-
-          {/* Step Indicators */}
-          <div className="flex justify-center gap-2">
-            {steps.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index <= currentStep 
-                    ? 'bg-primary' 
-                    : index === currentStep + 1 
-                      ? 'bg-primary/50' 
-                      : 'bg-slate-200'
-                }`}
-              />
-            ))}
+            <p className="text-sm text-slate-600">
+              {Math.round(progress)}% complete
+            </p>
           </div>
 
       </div>

@@ -50,7 +50,7 @@ export default function PostcodeSearch({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`w-full max-w-md mx-auto ${className}`} role="search">
+    <form onSubmit={handleSubmit} className={`w-full ${className}`} role="search">
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
           <label htmlFor="postcode-input" className="sr-only">

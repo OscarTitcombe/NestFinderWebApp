@@ -1,3 +1,6 @@
+'use client'
+
+import { motion } from 'framer-motion'
 import { TrendingUp, Users, Shield } from 'lucide-react'
 
 const trustItems = [
@@ -20,27 +23,44 @@ const trustItems = [
 
 export default function TrustStrip() {
   return (
-    <section className="py-12 bg-white border-y border-slate-200">
-      <div className="container-custom">
+    <section className="bg-[#F9FAFB] py-8">
+      <div className="nf-container">
+        {/* Label */}
+        <motion.div 
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-4"
+        >
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
+            Why NestFinder
+          </p>
+        </motion.div>
+        
+        {/* Trust items */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {trustItems.map((item, index) => {
             const IconComponent = item.icon
             return (
-              <div key={index} className="flex items-center justify-center md:justify-start space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <IconComponent className="w-5 h-5 text-primary" />
-                  </div>
+              <motion.div 
+                key={index} 
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="text-center"
+              >
+                <div className="flex justify-center mb-3">
+                  <IconComponent className="h-5 w-5 text-[#B2BEA4]" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-dark text-sm">
-                    {item.label}
-                  </h3>
-                  <p className="text-xs text-slate-600">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
+                <h3 className="font-medium text-[#101314] mb-1">
+                  {item.label}
+                </h3>
+                <p className="text-sm text-slate-600">
+                  {item.description}
+                </p>
+              </motion.div>
             )
           })}
         </div>

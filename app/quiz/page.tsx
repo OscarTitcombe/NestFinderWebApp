@@ -67,7 +67,7 @@ export default function QuizPage() {
   // Loading state while validating postcode
   if (!postcode || !normalizedPostcode) {
     return (
-      <div className="min-h-screen bg-light flex flex-col">
+      <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -83,7 +83,7 @@ export default function QuizPage() {
   // Show calculating screen after quiz completion
   if (showCalculating) {
     return (
-      <div className="min-h-screen bg-light flex flex-col">
+      <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
         <div className="flex-1">
           <CalculatingScreen
@@ -99,7 +99,7 @@ export default function QuizPage() {
 
   // Show quiz
   return (
-    <div className="min-h-screen bg-light flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
       <div className="flex-1">
         <PropertyQuiz
