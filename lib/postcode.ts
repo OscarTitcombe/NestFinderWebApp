@@ -67,3 +67,4 @@ export function normalizePostcode(input: string): PostcodeResult {
 export function isValidPostcode(input: string): boolean {
   return normalizePostcode(input).ok;
 }
+

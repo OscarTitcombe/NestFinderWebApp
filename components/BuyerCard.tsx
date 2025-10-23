@@ -80,7 +80,7 @@ export default function BuyerCard({ buyer, onContact }: BuyerCardProps) {
       {/* Contact Button */}
       <button
         onClick={onContact}
-        className="w-full btn-primary text-sm py-2.5 group-hover:bg-[#7A9A3A] transition-colors"
+        className="w-full bg-nest-mint hover:bg-nest-mintHover text-white text-sm py-2.5 rounded-xl font-medium transition-colors"
         aria-label={`Contact buyer looking for ${buyer.propertyType} up to ${formatCurrency(buyer.budget)}`}
       >
         I might have a property

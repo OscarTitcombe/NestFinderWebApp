@@ -70,7 +70,7 @@ export default function PrivacyPage() {
                     If you have any questions about this Privacy Policy or our data practices, 
                     please contact us at:
                   </p>
-                  <div className="bg-slate-50 rounded-lg p-4">
+                  <div className="bg-[#F5F5F5] rounded-lg p-4">
                     <p className="font-medium text-dark mb-2">NestFinder Support</p>
                     <p>Email: privacy@nestfinder.com</p>
                     <p>Address: [Your Business Address]</p>
@@ -88,3 +88,4 @@ export default function PrivacyPage() {
     </div>
   )
 }
+

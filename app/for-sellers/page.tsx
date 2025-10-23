@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Search, Eye, Mail, MapPin, DollarSign, Shield, HelpCircle } from 'lucide-react'
+import { PrimaryButton, GhostButton } from '@/components/Buttons'
 
 const steps = [
   {
@@ -58,33 +59,32 @@ export default function ForSellersPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-white to-light py-16 sm:py-24">
-        <div className="container-custom">
+      <section className="bg-nest-sageBg py-16 sm:py-24">
+        <div className="nf-container">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="heading-primary mb-6">
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-6">
               See real buyers — before you list.
             </h1>
             
-            <p className="subheading max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-8">
               Join the pre-market. Connect privately, sell faster, skip the noise.
             </p>
 
-            <Link
-              href="/market"
-              className="btn-primary text-lg px-8 py-4 inline-flex items-center"
-            >
-              Explore your area
-              <Search className="w-5 h-5 ml-2" />
-            </Link>
+            <PrimaryButton asChild>
+              <Link href="/market">
+                Explore your area
+                <Search className="w-5 h-5 ml-2" />
+              </Link>
+            </PrimaryButton>
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
       <section className="py-16 bg-white">
-        <div className="container-custom">
+        <div className="nf-container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-dark mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-4">
               How it works
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
@@ -98,16 +98,16 @@ export default function ForSellersPage() {
               return (
                 <div key={index} className="text-center flex flex-col h-full">
                   {/* Icon */}
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-nest-mint/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <IconComponent className="w-6 h-6 text-nest-mint" />
                   </div>
 
                   {/* Content */}
                   <div className="flex-grow">
-                    <h3 className="text-xl font-semibold text-dark mb-2">
+                    <h3 className="text-xl font-semibold text-slate-900 mb-2">
                       {step.title}
                     </h3>
-                    <p className="text-primary font-medium mb-2">
+                    <p className="text-nest-mint font-medium mb-2">
                       {step.description}
                     </p>
                     <p className="text-slate-600 text-sm">
@@ -116,7 +116,7 @@ export default function ForSellersPage() {
                   </div>
 
                   {/* Step Number - Fixed at bottom */}
-                  <div className="w-16 h-16 bg-primary/80 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mt-6">
+                  <div className="w-16 h-16 bg-nest-mint text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mt-6">
                     {step.number}
                   </div>
                 </div>
@@ -127,10 +127,10 @@ export default function ForSellersPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-16 section-light">
-        <div className="container-custom">
+      <section className="py-16 bg-nest-sageBg">
+        <div className="nf-container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-dark mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-4">
               Why choose NestFinder?
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
@@ -142,12 +142,12 @@ export default function ForSellersPage() {
             {benefits.map((benefit, index) => {
               const IconComponent = benefit.icon
               return (
-                <div key={index} className="card group hover:shadow-lg transition-all duration-200">
+                <div key={index} className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200">
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
-                      <IconComponent className="w-6 h-6 text-accent" />
+                    <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-orange-100 transition-colors">
+                      <IconComponent className="w-6 h-6 text-orange-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-dark mb-3">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
                       {benefit.title}
                     </h3>
                     <p className="text-sm text-slate-600">
@@ -163,9 +163,9 @@ export default function ForSellersPage() {
 
       {/* FAQ Section */}
       <section className="py-16 bg-white">
-        <div className="container-custom">
+        <div className="nf-container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-dark mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-4">
               Frequently asked questions
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
@@ -175,13 +175,13 @@ export default function ForSellersPage() {
 
           <div className="max-w-3xl mx-auto space-y-6">
             {faqs.map((faq, index) => (
-              <div key={index} className="card">
+              <div key={index} className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200">
                 <div className="flex items-start">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-1">
-                    <HelpCircle className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 bg-nest-mint/10 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-1">
+                    <HelpCircle className="w-4 h-4 text-nest-mint" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-dark mb-2">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">
                       {faq.question}
                     </h3>
                     <p className="text-slate-600">
@@ -196,10 +196,10 @@ export default function ForSellersPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 section-light">
-        <div className="container-custom">
+      <section className="py-16 bg-nest-sageAlt">
+        <div className="nf-container">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-dark mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-4">
               Ready to see buyer demand in your area?
             </h2>
             <p className="text-lg text-slate-600 mb-8">
@@ -207,20 +207,18 @@ export default function ForSellersPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/market"
-                className="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center"
-              >
-                Explore pre-market demand
-                <Search className="w-5 h-5 ml-2" />
-              </Link>
+              <PrimaryButton asChild>
+                <Link href="/market">
+                  Explore pre-market demand
+                  <Search className="w-5 h-5 ml-2" />
+                </Link>
+              </PrimaryButton>
               
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center px-8 py-4 text-primary border border-primary rounded-xl hover:bg-primary/5 transition-colors"
-              >
-                Return to homepage
-              </Link>
+              <GhostButton asChild>
+                <Link href="/">
+                  Return to homepage
+                </Link>
+              </GhostButton>
             </div>
           </div>
         </div>

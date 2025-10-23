@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle, AlertTriangle, XCircle, ArrowRight, Home } from 'lucide-react'
+import { PrimaryButton, GhostButton } from '@/components/Buttons'
 
 type VerificationStatus = 'success' | 'expired' | 'invalid' | 'loading'
 
@@ -78,10 +79,10 @@ export default function VerifyPage() {
 
   if (!verificationState) {
     return (
-      <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="container-custom">
+      <div className="min-h-screen bg-nest-sageBg flex items-center justify-center">
+        <div className="nf-container">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-nest-mint mx-auto"></div>
             <p className="mt-4 text-slate-600">Loading...</p>
           </div>
         </div>
@@ -92,18 +93,18 @@ export default function VerifyPage() {
   const IconComponent = verificationState.icon
 
   return (
-    <div className="min-h-screen bg-light flex items-center justify-center">
-      <div className="container-custom">
+    <div className="min-h-screen bg-nest-sageBg flex items-center justify-center">
+      <div className="nf-container">
         <div className="max-w-md mx-auto">
           {/* Verification Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+          <div className="bg-white rounded-2xl shadow-sm border border-nest-line p-8 text-center">
             {/* Icon */}
             <div className={`w-16 h-16 ${verificationState.iconBgColor} rounded-full flex items-center justify-center mx-auto mb-6`}>
               <IconComponent className={`w-8 h-8 ${verificationState.iconColor}`} />
             </div>
 
             {/* Title */}
-            <h1 className="text-2xl font-bold text-dark mb-4">
+            <h1 className="text-2xl font-bold text-slate-900 mb-4">
               {verificationState.title}
             </h1>
 
@@ -116,66 +117,59 @@ export default function VerifyPage() {
             <div className="space-y-3">
               {verificationState.status === 'success' && (
                 <>
-                  <Link
-                    href="/market"
-                    className={`w-full inline-flex items-center justify-center px-6 py-3 text-white ${verificationState.buttonColor} rounded-xl transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
-                  >
-                    Browse market
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
+                  <PrimaryButton asChild className="w-full">
+                    <Link href="/market">
+                      Browse market
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </PrimaryButton>
                   
-                  <Link
-                    href="/"
-                    className="w-full inline-flex items-center justify-center px-6 py-3 text-primary border border-primary rounded-xl hover:bg-primary/5 transition-colors"
-                  >
-                    <Home className="w-4 h-4 mr-2" />
-                    Home
-                  </Link>
+                  <GhostButton asChild className="w-full">
+                    <Link href="/">
+                      <Home className="w-4 h-4 mr-2" />
+                      Home
+                    </Link>
+                  </GhostButton>
                 </>
               )}
 
               {verificationState.status === 'expired' && (
                 <>
-                  <button
-                    className={`w-full inline-flex items-center justify-center px-6 py-3 text-white ${verificationState.buttonColor} rounded-xl transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2`}
-                  >
+                  <PrimaryButton className="w-full">
                     Request new verification
                     <ArrowRight className="w-4 h-4 ml-2" />
-                  </button>
+                  </PrimaryButton>
                   
-                  <Link
-                    href="/"
-                    className="w-full inline-flex items-center justify-center px-6 py-3 text-slate-600 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
-                  >
-                    <Home className="w-4 h-4 mr-2" />
-                    Home
-                  </Link>
+                  <GhostButton asChild className="w-full">
+                    <Link href="/">
+                      <Home className="w-4 h-4 mr-2" />
+                      Home
+                    </Link>
+                  </GhostButton>
                 </>
               )}
 
               {verificationState.status === 'invalid' && (
                 <>
-                  <Link
-                    href="/buy"
-                    className={`w-full inline-flex items-center justify-center px-6 py-3 text-white ${verificationState.buttonColor} rounded-xl transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2`}
-                  >
-                    Post your brief again
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
+                  <PrimaryButton asChild className="w-full">
+                    <Link href="/buy">
+                      Post your brief again
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </PrimaryButton>
                   
-                  <Link
-                    href="/"
-                    className="w-full inline-flex items-center justify-center px-6 py-3 text-slate-600 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
-                  >
-                    <Home className="w-4 h-4 mr-2" />
-                    Home
-                  </Link>
+                  <GhostButton asChild className="w-full">
+                    <Link href="/">
+                      <Home className="w-4 h-4 mr-2" />
+                      Home
+                    </Link>
+                  </GhostButton>
                 </>
               )}
 
               {verificationState.status === 'loading' && (
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary mr-3"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-nest-mint mr-3"></div>
                   <span className="text-slate-600">Verifying...</span>
                 </div>
               )}
@@ -201,3 +195,4 @@ export default function VerifyPage() {
     </div>
   )
 }
+

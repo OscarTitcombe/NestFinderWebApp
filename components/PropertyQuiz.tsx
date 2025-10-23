@@ -202,8 +202,8 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
                   onClick={() => handleAnswer(option.value)}
                   className={`p-4 sm:p-6 rounded-xl border-2 text-left transition-all duration-200 min-h-[60px] sm:min-h-[80px] flex items-center ${
                     isSelected
-                      ? 'border-primary bg-primary/5 shadow-md'
-                      : 'border-slate-200 hover:border-slate-300 hover:shadow-sm active:scale-[0.98]'
+                      ? 'border-nest-mint bg-nest-mint/5 shadow-md'
+                      : 'border-nest-line hover:border-nest-mint hover:shadow-sm active:scale-[0.98]'
                   }`}
                 >
                   <div className="flex items-center w-full">
@@ -214,7 +214,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
                     </div>
                     {isSelected && (
                       <div className="ml-2">
-                        <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-5 h-5 text-nest-mint" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -239,7 +239,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
               disabled={!canProceed()}
               className={`flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-medium transition-all min-h-[48px] text-sm sm:text-base ${
                 canProceed()
-                  ? 'bg-primary text-white hover:bg-primary/90 shadow-lg active:scale-[0.98]'
+                  ? 'bg-nest-mint text-white hover:bg-nest-mintHover shadow-lg active:scale-[0.98]'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >

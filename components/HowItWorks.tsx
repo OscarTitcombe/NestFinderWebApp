@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { FileText, Search, Mail } from 'lucide-react'
 
 const steps = [
@@ -28,20 +27,14 @@ export default function HowItWorks() {
   return (
     <section className="py-16 sm:py-20 lg:py-24 bg-white">
       <div className="nf-container">
-        <motion.div 
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.4 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#101314] mb-4">
             How it works
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Three simple steps to connect buyers and sellers
           </p>
-        </motion.div>
+        </div>
 
         <div className="relative">
           {/* Connecting line for desktop */}
@@ -51,12 +44,8 @@ export default function HowItWorks() {
             {steps.map((step, index) => {
               const IconComponent = step.icon
               return (
-                <motion.div 
+                <div 
                   key={index} 
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
                   className="text-center"
                 >
                   {/* Number badge */}
@@ -71,7 +60,7 @@ export default function HowItWorks() {
                   <p className="text-sm text-slate-600">
                     {step.description}
                   </p>
-                </motion.div>
+                </div>
               )
             })}
           </div>

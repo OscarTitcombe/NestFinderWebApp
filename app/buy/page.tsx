@@ -193,7 +193,7 @@ export default function BuyPage() {
 
               {/* Budget Range Display */}
               {watchedBudgetMin && watchedBudgetMax && (
-                <div className="bg-slate-50 rounded-lg p-4">
+                <div className="bg-[#F5F5F5] rounded-lg p-4">
                   <p className="text-sm text-slate-600">
                     <span className="font-medium">Budget range:</span> {formatCurrency(watchedBudgetMin)} - {formatCurrency(watchedBudgetMax)}
                   </p>
@@ -341,3 +341,4 @@ export default function BuyPage() {
     </div>
   )
 }
+

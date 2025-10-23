@@ -25,6 +25,10 @@
     @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
+  .nf-container-alt {
+    @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
   .container-custom {
     @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
@@ -44,23 +48,23 @@
   }
   
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-white bg-primary hover:bg-[#7A9A3A] shadow-sm hover:shadow transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none;
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-white bg-nest-mint hover:bg-nest-mintHover shadow-sm hover:shadow transition focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none;
   }
   
   .btn-secondary-ghost {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-[#101314] border border-slate-300 hover:bg-slate-50 transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none;
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-slate-800 border border-nest-line hover:bg-white/70 transition focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none;
   }
   
   .input-primary {
-    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200;
+    @apply w-full rounded-xl border border-nest-line bg-white px-4 py-3 text-base focus:ring-2 focus:ring-nest-sea focus:border-nest-sea focus:outline-none transition-all duration-200;
   }
   
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200;
+    @apply rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200;
   }
   
   .section-light {
-    @apply bg-[#F7F9FC];
+    @apply bg-nest-sageBg;
   }
   
   .line-clamp-3 {

@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { Home, Share2, Shield, MapPin } from 'lucide-react'
 
 const features = [
@@ -36,38 +35,28 @@ const features = [
 
 export default function FeatureGrid() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24 bg-[#F7F9FC]">
+    <section className="bg-white py-16 sm:py-20">
       <div className="nf-container">
-        <motion.div 
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.4 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#101314] mb-4">
             How NestFinder works
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             A new way to connect buyers and sellers in the property market
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {features.map((feature, index) => {
             const IconComponent = feature.icon
             return (
-              <motion.div 
+              <div 
                 key={index} 
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition"
+                className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition"
               >
                 <div className="flex items-start space-x-4">
                   {/* Icon pill */}
-                  <div className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-[#F7F9FC] text-primary mb-3 flex-shrink-0">
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-nest-sageBg text-nest-mint mb-3 flex-shrink-0">
                     <IconComponent className="h-5 w-5" />
                   </div>
                   
@@ -80,7 +69,7 @@ export default function FeatureGrid() {
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )
           })}
         </div>

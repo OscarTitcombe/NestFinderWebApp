@@ -178,22 +178,22 @@ export default function FilterBar({ onFilterChange, initialValues }: FilterBarPr
       {/* Active Filters Display */}
       <div className="mt-4 flex flex-wrap gap-2">
         {minBudget > 0 && (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-nest-mint/10 text-nest-mint">
             Min: {formatCurrency(minBudget)}
           </span>
         )}
         {maxBudget < 2000000 && (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-nest-mint/10 text-nest-mint">
             Max: {formatCurrency(maxBudget)}
           </span>
         )}
         {beds > 1 && (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-nest-mint/10 text-nest-mint">
             {beds}+ beds
           </span>
         )}
         {propertyType !== 'Any' && (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-nest-mint/10 text-nest-mint">
             {propertyType}
           </span>
         )}

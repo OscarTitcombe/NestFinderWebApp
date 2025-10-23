@@ -82,7 +82,7 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
           </div>
 
           {/* Buyer Info */}
-          <div className="p-6 border-b border-slate-200 bg-slate-50">
+          <div className="p-6 border-b border-slate-200 bg-[#F5F5F5]">
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="text-lg font-semibold text-dark">
@@ -153,14 +153,14 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-[#F5F5F5] transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || !email.trim() || !message.trim()}
-                className="flex-1 btn-primary text-sm py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-nest-mint hover:bg-nest-mintHover text-white text-sm py-2 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isSubmitting ? (
                   <div className="flex items-center justify-center">
@@ -178,3 +178,4 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
     </div>
   )
 }
+

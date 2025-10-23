@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { normalizePostcode } from '@/lib/postcode'
+import { PrimaryButton } from './Buttons'
 
 interface PostcodeSearchProps {
   buttonLabel?: string
@@ -74,10 +75,10 @@ export default function PostcodeSearch({
             </p>
           )}
         </div>
-        <button
+        <PrimaryButton
           type="submit"
           disabled={isLoading || !postcode.trim()}
-          className="btn-primary whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+          className="whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <div className="flex items-center">
@@ -87,7 +88,7 @@ export default function PostcodeSearch({
           ) : (
             buttonLabel
           )}
-        </button>
+        </PrimaryButton>
       </div>
       
       {showHelperText && (

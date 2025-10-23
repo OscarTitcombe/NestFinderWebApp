@@ -98,7 +98,7 @@ export default function CalculatingScreen({
           <div className="mb-8">
             <div className="w-full bg-slate-200 rounded-full h-4 mb-4">
               <div 
-                className="bg-primary h-4 rounded-full transition-all duration-100 ease-out"
+                className="bg-nest-mint h-4 rounded-full transition-all duration-100 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>

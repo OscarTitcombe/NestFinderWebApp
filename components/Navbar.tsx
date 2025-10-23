@@ -20,7 +20,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link 
             href="/" 
-            className="text-2xl font-bold text-[#101314] hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg"
+            className="text-2xl font-bold text-[#101314] hover:text-nest-mint transition-colors focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg"
           >
             NestFinder
           </Link>
@@ -29,25 +29,25 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             <Link 
               href="/market" 
-              className="text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-1"
+              className="text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-1"
             >
               Explore your area
             </Link>
             <Link 
               href="/for-buyers" 
-              className="text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-1"
+              className="text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-1"
             >
               For Buyers
             </Link>
             <Link 
               href="/for-sellers" 
-              className="text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-1"
+              className="text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-1"
             >
               For Sellers
             </Link>
             <Link 
               href="/signin" 
-              className="text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-1"
+              className="text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-1"
             >
               Sign in
             </Link>
@@ -57,7 +57,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-slate-600 hover:text-[#101314] transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg p-2"
+              className="text-slate-600 hover:text-nest-sea transition-colors focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg p-2"
               aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
               aria-expanded={isMobileMenuOpen}
             >
@@ -80,28 +80,28 @@ export default function Navbar() {
             <div className="nf-container py-4 space-y-4">
               <Link 
                 href="/market" 
-                className="block text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-2"
+                className="block text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Explore your area
               </Link>
               <Link 
                 href="/for-buyers" 
-                className="block text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-2"
+                className="block text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 For Buyers
               </Link>
               <Link 
                 href="/for-sellers" 
-                className="block text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-2"
+                className="block text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 For Sellers
               </Link>
               <Link 
                 href="/signin" 
-                className="block text-slate-600 hover:text-[#101314] transition-colors font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-lg px-2 py-2"
+                className="block text-slate-600 hover:text-nest-sea transition-colors font-medium focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg px-2 py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Sign in
