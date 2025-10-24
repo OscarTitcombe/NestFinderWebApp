@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface QuizAnswers {
   propertyType: string
@@ -158,95 +159,96 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
 
   const currentStepData = steps[currentStep]
 
+  const progress = Math.round(((currentStep + 1) / steps.length) * 100)
+  const totalSteps = steps.length
+
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-4 sm:py-8 lg:py-12 px-4 sm:px-6">
-      <div className="w-full max-w-4xl mx-auto">
-          {/* Progress Bar */}
-          <div className="mb-6 sm:mb-8">
-            <div className="flex items-center justify-between mb-2 max-w-2xl mx-auto">
-              <span className="text-xs sm:text-sm font-medium text-slate-600">
-                Step {currentStep + 1} of {steps.length}
-              </span>
-              <span className="text-xs sm:text-sm text-slate-500">
-                {Math.round(((currentStep + 1) / steps.length) * 100)}% complete
-              </span>
-            </div>
-            <div className="w-full max-w-2xl mx-auto bg-slate-200 rounded-full h-2">
-              <div 
-                className="bg-primary h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-              />
-            </div>
-          </div>
+    <div className="min-h-screen flex flex-col justify-center items-center bg-nest-sageBg">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-nest-line p-8 sm:p-10">
+        {/* Progress indicator */}
+        <p className="text-slate-500 text-sm text-center mb-2">
+          Step {currentStep + 1} of {totalSteps} • {progress}% complete
+        </p>
 
-          {/* Header */}
-          <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#101314] mb-2 sm:mb-4 leading-tight">
-              {currentStepData.title}
-            </h1>
-          </div>
+        {/* Progress Bar */}
+        <div className="w-full h-2 bg-nest-sageBg rounded-full mt-6 mb-4 overflow-hidden">
+          <div
+            className="h-2 bg-nest-mint transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
 
-          {/* Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 w-full max-w-[800px] mx-auto">
-            {currentStepData.options.map((option) => {
-              const isSelected = currentStepData.multiSelect 
-                ? answers.features.includes(option.value)
-                : answers[currentStepData.multiSelect ? 'features' : 
-                  (currentStep === 0 ? 'propertyType' :
-                   currentStep === 1 ? 'budget' :
-                   currentStep === 2 ? 'bedrooms' : 'timeframe') as keyof QuizAnswers] === option.value
+        {/* Question */}
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-8">
+          {currentStepData.title}
+        </h1>
 
-              return (
-                <button
-                  key={option.value}
-                  onClick={() => handleAnswer(option.value)}
-                  className={`p-4 sm:p-6 rounded-xl border-2 text-left transition-all duration-200 min-h-[60px] sm:min-h-[80px] flex items-center ${
-                    isSelected
-                      ? 'border-nest-mint bg-nest-mint/5 shadow-md'
-                      : 'border-nest-line hover:border-nest-mint hover:shadow-sm active:scale-[0.98]'
-                  }`}
-                >
-                  <div className="flex items-center w-full">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-[#101314] text-base sm:text-lg">
-                        {option.label}
-                      </h3>
-                    </div>
-                    {isSelected && (
-                      <div className="ml-2">
-                        <svg className="w-5 h-5 text-nest-mint" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+        {/* Options with animation */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+              {currentStepData.options.map((option) => {
+                const isSelected = currentStepData.multiSelect 
+                  ? answers.features.includes(option.value)
+                  : answers[currentStepData.multiSelect ? 'features' : 
+                    (currentStep === 0 ? 'propertyType' :
+                     currentStep === 1 ? 'budget' :
+                     currentStep === 2 ? 'bedrooms' : 'timeframe') as keyof QuizAnswers] === option.value
+
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => handleAnswer(option.value)}
+                    className={`p-4 sm:p-6 rounded-xl border-2 text-left transition-all duration-200 min-h-[60px] sm:min-h-[80px] flex items-center ${
+                      isSelected
+                        ? 'border-nest-mint bg-nest-mint/5 shadow-md'
+                        : 'border-nest-line hover:border-nest-mint hover:shadow-sm active:scale-[0.98]'
+                    }`}
+                  >
+                    <div className="flex items-center w-full">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-slate-900 text-base sm:text-lg">
+                          {option.label}
+                        </h3>
                       </div>
-                    )}
-                  </div>
-                </button>
-              )
-            })}
-          </div>
+                      {isSelected && (
+                        <div className="ml-2">
+                          <svg className="w-5 h-5 text-nest-mint" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
-          {/* Navigation */}
-          <div className="flex flex-col sm:flex-row justify-center sm:justify-end items-center gap-4">
-            <button
-              onClick={handleSkip}
-              className="px-6 py-3 text-slate-500 hover:text-slate-700 transition-colors font-medium rounded-lg hover:bg-slate-50 min-h-[48px] text-sm sm:text-base"
-            >
-              Skip
-            </button>
-            
-            <button
-              onClick={handleNext}
-              disabled={!canProceed()}
-              className={`flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-medium transition-all min-h-[48px] text-sm sm:text-base ${
-                canProceed()
-                  ? 'bg-nest-mint text-white hover:bg-nest-mintHover shadow-lg active:scale-[0.98]'
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-              }`}
-            >
-              <span>{currentStep === steps.length - 1 ? 'Find buyers' : 'Next'}</span>
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
+        {/* Navigation */}
+        <div className="mt-10 flex justify-between items-center">
+          <button 
+            onClick={handleSkip}
+            className="text-slate-500 hover:text-slate-700 transition"
+          >
+            Skip
+          </button>
+          
+          <button
+            onClick={handleNext}
+            disabled={!canProceed()}
+            className="bg-nest-mint hover:bg-nest-mint/90 text-white font-semibold rounded-xl px-6 py-2 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {currentStep === steps.length - 1 ? 'Find buyers' : 'Next →'}
+          </button>
+        </div>
       </div>
     </div>
   )
