@@ -246,7 +246,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
             disabled={!canProceed()}
             className="bg-nest-mint hover:bg-nest-mint/90 text-white font-semibold rounded-xl px-6 py-2 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {currentStep === steps.length - 1 ? 'Find buyers' : 'Next →'}
+            {currentStep === steps.length - 1 ? 'Explore buyers' : 'Next →'}
           </button>
         </div>
       </div>

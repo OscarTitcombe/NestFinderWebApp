@@ -14,7 +14,7 @@ const features = [
     icon: Share2,
     title: 'For Buyers',
     bullets: [
-      'Tell us what you\'re searching for and get matched with off-market sellers'
+      'Tell us what you\'re searching for and get matched with sellers exploring interest'
     ]
   },
   {

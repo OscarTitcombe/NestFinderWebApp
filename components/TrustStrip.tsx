@@ -6,7 +6,7 @@ const trustItems = [
   {
     icon: TrendingUp,
     label: 'Private by default',
-    description: 'No spam, no agents'
+    description: 'No spam, secure connections'
   },
   {
     icon: Users,
@@ -15,8 +15,8 @@ const trustItems = [
   },
   {
     icon: Shield,
-    label: 'Off-market first',
-    description: 'Discover homes before they\'re public'
+    label: 'Pre-market first',
+    description: 'Discover interest before listings go public'
   }
 ]
 

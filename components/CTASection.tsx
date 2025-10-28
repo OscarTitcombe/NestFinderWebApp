@@ -11,7 +11,7 @@ export default function CTASection() {
             Check pre-market demand near you.
           </h2>
           <p className="mt-2 text-slate-600">
-            The market's crowded. The pre-market isn't.
+            Explore interest before listings go live.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mt-12">
@@ -32,7 +32,7 @@ export default function CTASection() {
             <div className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition">
               <h3 className="font-semibold text-[#101314] mb-2">For Buyers</h3>
               <p className="text-sm text-slate-600 mb-4">
-                Post your property brief and let sellers find you. No more cold calling or endless searching.
+                Post your property brief and let sellers find you. Connect privately and explore your options.
               </p>
               <PrimaryButton asChild>
                 <Link href="/buy">

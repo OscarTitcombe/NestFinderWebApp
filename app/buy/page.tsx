@@ -137,7 +137,7 @@ export default function BuyPage() {
               Post your property brief
             </h1>
             <p className="text-lg text-slate-600">
-              Let sellers know what you're looking for and they'll come to you
+              Let sellers know what you're looking for and explore your options
             </p>
           </div>
 

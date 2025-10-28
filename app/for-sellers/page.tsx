@@ -29,13 +29,13 @@ const steps = [
 const benefits = [
   {
     icon: DollarSign,
-    title: 'No Commission Fees',
-    description: 'Save thousands by cutting out estate agent fees'
+    title: 'Cost Effective',
+    description: 'Explore interest and connect early without upfront costs'
   },
   {
     icon: Shield,
     title: 'Direct Contact',
-    description: 'Connect with buyers without middlemen'
+    description: 'Connect privately with interested buyers before going to market'
   },
   {
     icon: MapPin,
@@ -47,7 +47,7 @@ const benefits = [
 const faqs = [
   {
     question: 'Do I need an estate agent?',
-    answer: 'No — you can contact buyers privately. NestFinder connects you with verified buyers in your area, eliminating the need for traditional estate agents and their fees.'
+    answer: 'NestFinder works alongside traditional estate agents or independently. You can explore buyer interest and connect privately before deciding how to proceed with your sale.'
   },
   {
     question: 'Is it free?',

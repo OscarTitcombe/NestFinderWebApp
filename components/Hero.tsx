@@ -28,7 +28,7 @@ export default function Hero() {
           
           {/* Subheading */}
           <p className="mt-3 text-lg sm:text-xl text-[#2B3135]">
-            Find real buyers before you list — or sellers before they go live. NestFinder connects people quietly, before the market does.
+            Find real buyers before you list — or sellers before they go live. NestFinder connects people privately, before listings go public.
           </p>
 
           {/* Postcode Search with depth */}

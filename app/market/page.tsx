@@ -180,7 +180,7 @@ export default function MarketPage() {
         <div className="container-custom">
           <div className="text-center max-w-2xl mx-auto">
             <h1 className="text-4xl font-bold text-dark mb-4">
-              Find buyer interest
+              Explore buyer interest
             </h1>
             <p className="text-lg text-slate-600 mb-8">
               Enter a postcode to see what buyers are looking for in your area

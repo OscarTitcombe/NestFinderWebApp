@@ -90,7 +90,7 @@ export default function CalculatingScreen({
           {/* Header */}
           <div className="mb-12">
             <h1 className="quiz-title mb-4">
-              Finding buyers in your area
+              Exploring buyer interest in your area
             </h1>
           </div>
 

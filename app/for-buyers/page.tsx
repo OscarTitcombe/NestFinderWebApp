@@ -52,7 +52,7 @@ export default function ForBuyersPage() {
           </h1>
           
           <p className="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
-            Post your brief and get matched with off-market sellers — before listings go public.
+            Post your brief and get matched with sellers exploring interest — before listings go public.
           </p>
 
           <div className="mt-8">
