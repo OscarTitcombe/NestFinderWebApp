@@ -4,17 +4,21 @@ import { PrimaryButton } from './Buttons'
 
 export default function CTASection() {
   return (
-    <section className="bg-nest-sageAlt py-16 sm:py-20">
-      <div className="nf-container">
+    <section className="relative py-16 sm:py-20">
+      {/* Background Map Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/mapforexploreyourarea.png')"
+        }}
+      ></div>
+      
+      {/* White overlay for readability - same opacity as homepage */}
+      <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+      
+      <div className="relative nf-container">
         <div className="text-center max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#101314] text-center">
-            Check pre-market demand near you.
-          </h2>
-          <p className="mt-2 text-slate-600">
-            Explore interest before listings go live.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* For Sellers */}
             <div className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition">
               <h3 className="font-semibold text-[#101314] mb-2">For Sellers</h3>
@@ -34,7 +38,7 @@ export default function CTASection() {
               <p className="text-sm text-slate-600 mb-4">
                 Post your property brief and let sellers find you. Connect privately and explore your options.
               </p>
-              <PrimaryButton asChild>
+              <PrimaryButton asChild className="!bg-nest-sea hover:!bg-[#5AA5B3] focus-visible:!ring-nest-sea">
                 <Link href="/buy">
                   Create your private brief
                 </Link>
