@@ -1,6 +1,6 @@
 'use client'
 
-import PostcodeSearch from './PostcodeSearch'
+import HeroCtaTabs from './HeroCtaTabs'
 
 export default function Hero() {
   return (
@@ -23,26 +23,19 @@ export default function Hero() {
         <div className="text-center max-w-2xl mx-auto">
           {/* Main Headline */}
           <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-[#101314]">
-            Private, pre-market, home discovery
+            Nest Finder
           </h1>
           
           {/* Subheading */}
           <p className="mt-3 text-lg sm:text-xl text-[#2B3135]">
-            Find real buyers before you list — or sellers before they go live. NestFinder connects people privately, before listings go public.
+            Explore your local housing network.
+            <br />
+            Discover active buyers and potential homes nearby.
           </p>
 
-          {/* Postcode Search with depth */}
-          <div className="mt-6">
-            <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-nest-line bg-white shadow-sm p-2 sm:p-3">
-              <PostcodeSearch 
-                buttonLabel="Explore your area"
-              />
-            </div>
-            
-            {/* Social proof */}
-            <p className="mt-3 text-sm text-slate-600">
-              Join 1,200+ buyers and sellers exploring off-market homes.
-            </p>
+          {/* Tabbed CTA */}
+          <div className="mt-8">
+            <HeroCtaTabs />
           </div>
         </div>
       </div>

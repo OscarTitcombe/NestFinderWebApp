@@ -10,13 +10,15 @@ interface PostcodeSearchProps {
   placeholder?: string
   showHelperText?: boolean
   className?: string
+  mode?: 'buyer' | 'seller'
 }
 
 export default function PostcodeSearch({ 
   buttonLabel = "Explore pre-market demand",
   placeholder = "Enter postcode (e.g., SW1A)",
   showHelperText = true,
-  className = ""
+  className = "",
+  mode = 'seller'
 }: PostcodeSearchProps) {
   const [postcode, setPostcode] = useState('')
   const [error, setError] = useState('')
@@ -29,10 +31,18 @@ export default function PostcodeSearch({
     setIsLoading(true)
 
     try {
+      // Buyer mode: navigate directly to /buy page
+      if (mode === 'buyer') {
+        router.push('/buy')
+        return
+      }
+
+      // Seller mode: validate postcode and navigate to quiz
       const result = normalizePostcode(postcode)
       
       if (!result.ok) {
         setError(result.error || 'Invalid postcode')
+        setIsLoading(false)
         return
       }
 
@@ -40,7 +50,6 @@ export default function PostcodeSearch({
       router.push(`/quiz?postcode=${encodeURIComponent(result.district!)}`)
     } catch (err) {
       setError('Something went wrong. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }
@@ -77,8 +86,15 @@ export default function PostcodeSearch({
         </div>
         <PrimaryButton
           type="submit"
-          disabled={isLoading || !postcode.trim()}
-          className="whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading || (mode === 'seller' && !postcode.trim())}
+          className={`
+            whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed
+            ${mode === 'buyer' 
+              ? '!bg-nest-sea hover:!bg-[#5AA5B3] focus-visible:!ring-nest-sea' 
+              : ''
+            }
+            ${!postcode.trim() && !isLoading ? 'opacity-60' : ''}
+          `}
         >
           {isLoading ? (
             <div className="flex items-center">

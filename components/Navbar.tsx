@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
@@ -21,17 +20,9 @@ export default function Navbar() {
           {/* Logo */}
           <Link 
             href="/" 
-            className="flex items-center space-x-0.5 text-[27px] font-bold text-[#101314] hover:text-nest-mint transition-colors focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg"
+            className="text-[27px] font-sans font-bold text-[#101314] hover:text-nest-mint transition-colors focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg"
           >
-            <Image
-              src="/logo-v3.png"
-              alt="NestFinder"
-              width={32}
-              height={32}
-              className="h-8 w-auto"
-              priority
-            />
-            <span>NestFinder</span>
+            NestFinder
           </Link>
 
           {/* Navigation Links */}

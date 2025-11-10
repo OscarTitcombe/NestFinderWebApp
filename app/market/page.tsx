@@ -176,19 +176,33 @@ export default function MarketPage() {
   // Empty state - no postcode provided
   if (!postcode || !normalizedPostcode) {
     return (
-      <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto">
-            <h1 className="text-4xl font-bold text-dark mb-4">
-              Explore buyer interest
-            </h1>
-            <p className="text-lg text-slate-600 mb-8">
-              Enter a postcode to see what buyers are looking for in your area
-            </p>
-            <PostcodeSearch 
-              buttonLabel="Browse buyer interest"
-              className="max-w-md"
-            />
+      <div className="min-h-screen relative">
+        {/* Background Map Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/mapforexploreyourarea.png')"
+          }}
+        ></div>
+        
+        {/* White overlay for readability - same opacity as homepage */}
+        <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+        
+        <div className="relative min-h-screen flex items-center justify-center">
+          <div className="container-custom">
+            <div className="text-center max-w-2xl mx-auto">
+              <h1 className="text-4xl font-bold text-dark mb-4">
+                Explore buyer interest
+              </h1>
+              <p className="text-lg text-slate-600 mb-8">
+                Enter a postcode to see what buyers are looking for in your area
+              </p>
+              <div className="mx-auto max-w-xl rounded-2xl border border-nest-line bg-white shadow-sm p-2 sm:p-3">
+                <PostcodeSearch 
+                  buttonLabel="Browse buyer interest"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -197,19 +211,32 @@ export default function MarketPage() {
 
   return (
     <div className="min-h-screen bg-light">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="container-custom py-8">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-dark mb-2">
-              Buyer interest near {normalizedPostcode}
-            </h1>
-            <p className="text-lg text-slate-600">
-              {filteredBuyers.length} buyers looking in your area
-            </p>
+      {/* Header with Background Map */}
+      <section className="relative isolate">
+        {/* Background Map Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/mapforexploreyourarea.png')"
+          }}
+        ></div>
+        
+        {/* White overlay for readability - same opacity as homepage */}
+        <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+        
+        <div className="relative">
+          <div className="container-custom py-8">
+            <div className="text-center">
+              <h1 className="text-3xl sm:text-4xl font-bold text-dark mb-2">
+                Buyer interest near {normalizedPostcode}
+              </h1>
+              <p className="text-lg text-slate-600">
+                {filteredBuyers.length} buyers looking in your area
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Filter Bar */}
       <div className="bg-white border-b border-slate-200">

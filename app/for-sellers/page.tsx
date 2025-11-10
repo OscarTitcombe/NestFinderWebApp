@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Search, Eye, Mail, MapPin, DollarSign, Shield, HelpCircle } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
+import PostcodeSearch from '@/components/PostcodeSearch'
 
 const steps = [
   {
@@ -59,23 +60,35 @@ export default function ForSellersPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-nest-sageBg py-16 sm:py-24">
-        <div className="nf-container">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-6">
-              See real buyers — before you list.
-            </h1>
-            
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-8">
-              Join the pre-market. Connect privately, sell faster, skip the noise.
-            </p>
+      <section className="relative isolate">
+        {/* Background Map Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/mapforsellers.png')"
+          }}
+        ></div>
+        
+        {/* White overlay for readability - same opacity as homepage */}
+        <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+        
+        <div className="relative flex items-center min-h-[300px] sm:min-h-[350px]">
+          <div className="nf-container relative z-10 w-full py-12 sm:py-16">
+            <div className="text-center max-w-2xl mx-auto">
+              <h1 className="text-3xl sm:text-4xl font-sans font-bold tracking-tight text-slate-900 mb-6">
+                Find real buyers before you list
+              </h1>
 
-            <PrimaryButton asChild>
-              <Link href="/market">
-                Explore your area
-                <Search className="w-5 h-5 ml-2" />
-              </Link>
-            </PrimaryButton>
+              {/* Postcode Search with depth */}
+              <div className="mt-6">
+                <div className="mx-auto max-w-xl rounded-2xl border border-nest-line bg-white shadow-sm p-2 sm:p-3">
+                  <PostcodeSearch 
+                    buttonLabel="Explore your area"
+                    mode="seller"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -144,8 +157,8 @@ export default function ForSellersPage() {
               return (
                 <div key={index} className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200">
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-orange-100 transition-colors">
-                      <IconComponent className="w-6 h-6 text-orange-400" />
+                    <div className="w-12 h-12 bg-nest-sageBg rounded-xl flex items-center justify-center mb-4 group-hover:bg-nest-sageAlt transition-colors">
+                      <IconComponent className="w-6 h-6 text-nest-sea" />
                     </div>
                     <h3 className="text-lg font-semibold text-slate-900 mb-3">
                       {benefit.title}
@@ -207,10 +220,9 @@ export default function ForSellersPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <PrimaryButton asChild>
+              <PrimaryButton asChild className="px-8 py-4 text-lg font-bold shadow-lg hover:shadow-xl">
                 <Link href="/market">
                   Explore pre-market demand
-                  <Search className="w-5 h-5 ml-2" />
                 </Link>
               </PrimaryButton>
               

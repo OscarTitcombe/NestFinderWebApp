@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { FileText, Shield, Mail, Users, Home, CheckCircle } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
+import PostcodeSearch from '@/components/PostcodeSearch'
 
 const steps = [
   {
@@ -45,29 +46,35 @@ export default function ForBuyersPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-nest-sageBg">
-        <div className="nf-container py-16 sm:py-20 text-center">
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
-            House-hunt anonymously.
-          </h1>
-          
-          <p className="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
-            Post your brief and get matched with sellers exploring interest — before listings go public.
-          </p>
+      <section className="relative isolate">
+        {/* Background Map Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/mapforbuyers.png')"
+          }}
+        ></div>
+        
+        {/* White overlay for readability - same opacity as homepage */}
+        <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+        
+        <div className="relative flex items-center min-h-[300px] sm:min-h-[350px]">
+          <div className="nf-container relative z-10 w-full py-12 sm:py-16 text-center">
+            <div className="max-w-2xl mx-auto">
+              <h1 className="text-3xl sm:text-4xl font-sans font-bold tracking-tight text-slate-900 mb-6">
+                Find homes before they hit the market
+              </h1>
 
-          <div className="mt-8">
-            <PrimaryButton asChild>
-              <Link href="/buy">
-                Create your private brief
-              </Link>
-            </PrimaryButton>
-            
-            <Link
-              href="#how-it-works"
-              className="text-nest-sea hover:underline block mt-2"
-            >
-              Learn how it works
-            </Link>
+              {/* Postcode Search with depth */}
+              <div className="mt-6">
+                <div className="mx-auto max-w-xl rounded-2xl border border-nest-line bg-white shadow-sm p-2 sm:p-3">
+                  <PostcodeSearch 
+                    buttonLabel="Upload your brief"
+                    mode="buyer"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -124,7 +131,7 @@ export default function ForBuyersPage() {
               const IconComponent = benefit.icon
               return (
                 <div key={index} className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition">
-                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-400 mb-3">
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-nest-sageBg text-nest-sea mb-3">
                     <IconComponent className="h-5 w-5" />
                   </div>
                   
@@ -152,8 +159,8 @@ export default function ForBuyersPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <PrimaryButton asChild>
-              <Link href="/buy">
+            <PrimaryButton asChild className="!px-10 !py-5 !text-xl !font-bold !shadow-lg hover:!shadow-xl">
+              <Link href="/buy" className="!px-0">
                 Create your private brief
               </Link>
             </PrimaryButton>

@@ -8,14 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#99B947',
-        accent: '#F4A261',
+        primary: '#1A6AFF',
+        accent: '#00B894',
         dark: '#101314',
         light: '#F7F9FC',
         nest: {
-          mint: '#8DC8A9',       // primary CTA
+          mint: '#8DC8A9',       // pale green (primary CTA) - less saturated
           mintHover: '#7BBF9D',  // CTA hover
-          sea: '#4DA6B8',        // secondary accents/links
+          sea: '#6BB8C5',        // paler blue (secondary accents/links) - lighter tone
           sageBg: '#F7FAF8',     // very light section bg
           sageAlt: '#EAF3EC',    // CTA section bg
           line: '#E1EDE6'        // card borders/dividers

@@ -49,7 +49,7 @@ export default function HowItWorks() {
                   className="text-center"
                 >
                   {/* Number badge */}
-                  <div className="h-10 w-10 rounded-full bg-[#B2BEA4]/20 text-[#2B3135] flex items-center justify-center font-semibold mb-3 mx-auto">
+                  <div className="h-10 w-10 rounded-full bg-nest-sageBg text-nest-sea flex items-center justify-center font-semibold mb-3 mx-auto">
                     {step.number}
                   </div>
                   
