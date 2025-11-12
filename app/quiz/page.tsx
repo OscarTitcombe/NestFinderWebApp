@@ -46,7 +46,41 @@ export default function QuizPage() {
     setShowCalculating(true)
   }
 
-  const handleCalculatingComplete = () => {
+  const handleCalculatingComplete = async () => {
+    // Save seller property to Supabase
+    if (quizAnswers && normalizedPostcode) {
+      try {
+        const { createSellerProperty } = await import('@/lib/supabase/queries')
+        
+        // Map quiz answers to database format
+        const priceRanges: Record<string, { min: number; max: number }> = {
+          'under-300k': { min: 0, max: 300000 },
+          '300k-500k': { min: 300000, max: 500000 },
+          '500k-750k': { min: 500000, max: 750000 },
+          '750k-1m': { min: 750000, max: 1000000 },
+          'over-1m': { min: 1000000, max: 10000000 },
+          'any-budget': { min: 0, max: 10000000 }
+        }
+        
+        const priceRange = priceRanges[quizAnswers.budget] || { min: 0, max: 10000000 }
+        const bedrooms = quizAnswers.bedrooms === '0' ? null : parseInt(quizAnswers.bedrooms) || null
+        
+        await createSellerProperty({
+          postcode_district: normalizedPostcode,
+          property_type: (quizAnswers.propertyType === 'any' ? 'any' : quizAnswers.propertyType) as 'house' | 'flat' | 'bungalow' | 'any' | 'other',
+          expected_price_min: priceRange.min,
+          expected_price_max: priceRange.max,
+          bedrooms: bedrooms,
+          timeframe: quizAnswers.timeframe as 'immediately' | '1-3-months' | '3-6-months' | '6-12-months' | 'just-browsing' | null,
+          features: quizAnswers.features.length > 0 ? quizAnswers.features : null,
+          status: 'active'
+        })
+      } catch (err: any) {
+        console.error('Error saving seller property:', err)
+        // Continue to market page even if save fails
+      }
+    }
+    
     // Navigate to market page with postcode and quiz answers as URL params
     const params = new URLSearchParams({
       postcode: normalizedPostcode!,

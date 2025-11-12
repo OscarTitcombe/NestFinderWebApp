@@ -1,34 +1,141 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
-import { Mail, Home } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Mail, Home, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
+import { signInWithEmail } from '@/lib/supabase/auth'
 
 export default function SignInPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      await signInWithEmail(email)
+      setIsSubmitted(true)
+    } catch (err: any) {
+      setError(err.message || 'Failed to send magic link. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-nest-sageBg flex items-center justify-center">
+        <div className="nf-container">
+          <div className="text-center max-w-2xl mx-auto">
+            {/* Success Icon */}
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            
+            {/* Headline */}
+            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
+              Check your email
+            </h1>
+            
+            {/* Subtext */}
+            <p className="text-lg text-slate-600 mb-8">
+              We've sent a magic link to <strong>{email}</strong>. Click the link in the email to sign in.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <GhostButton asChild>
+                <Link href="/">
+                  <Home className="w-4 h-4 mr-2" />
+                  Go home
+                </Link>
+              </GhostButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-nest-sageBg flex items-center justify-center">
       <div className="nf-container">
         <div className="text-center max-w-2xl mx-auto">
-          {/* Coming Soon Icon */}
+          {/* Icon */}
           <div className="w-20 h-20 bg-nest-mint/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Mail className="w-10 h-10 text-nest-mint" />
           </div>
           
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
-            Sign-in with magic links coming soon.
+            Sign in with magic link
           </h1>
           
           {/* Subtext */}
           <p className="text-lg text-slate-600 mb-8">
-            We're working on a seamless sign-in experience. For now, you can browse buyer demand and post your brief without an account.
+            Enter your email address and we'll send you a secure link to sign in. No password needed.
           </p>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <PrimaryButton asChild>
+          {/* Sign In Form */}
+          <div className="bg-white rounded-2xl shadow-sm border border-nest-line p-6 sm:p-8 max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2 text-left">
+                  Email address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="input-primary w-full"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              {error && (
+                <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <PrimaryButton
+                type="submit"
+                disabled={isLoading || !email}
+                className="w-full"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Sending...
+                  </div>
+                ) : (
+                  <>
+                    Send magic link
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </PrimaryButton>
+            </form>
+          </div>
+
+          {/* Alternative Actions */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <GhostButton asChild>
               <Link href="/market">
                 Browse market
               </Link>
-            </PrimaryButton>
+            </GhostButton>
             
             <GhostButton asChild>
               <Link href="/buy">

@@ -48,7 +48,7 @@
   }
   
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-white bg-nest-mint hover:bg-nest-mintHover shadow-sm hover:shadow transition focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none;
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium text-white bg-nest-mint hover:bg-nest-mintHover shadow-sm hover:shadow transition-all duration-200 focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none active:scale-[0.98];
   }
   
   .btn-secondary-ghost {
@@ -60,7 +60,7 @@
   }
   
   .card {
-    @apply rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200;
+    @apply rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition-all duration-300;
   }
   
   .section-light {
@@ -112,4 +112,49 @@
     cursor: pointer;
     border: none;
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
 }

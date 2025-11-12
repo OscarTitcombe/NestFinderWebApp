@@ -1,10 +1,14 @@
 'use client'
 
-import { MapPin, Home, Calendar } from 'lucide-react'
+import { useState } from 'react'
+import { MapPin, Home } from 'lucide-react'
+import clsx from 'clsx'
 
 interface Buyer {
   id: string
   budget: number
+  budgetMin?: number
+  budgetMax?: number
   minBeds: number
   maxBeds: number
   propertyType: string
@@ -19,72 +23,85 @@ interface BuyerCardProps {
 }
 
 export default function BuyerCard({ buyer, onContact }: BuyerCardProps) {
-  const formatCurrency = (amount: number) => {
+  const [expanded, setExpanded] = useState(false)
+
+  // Format money helper - returns number with commas, no currency symbol
+  const fmt = (amount: number) => {
     return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount)
   }
 
-  const getBedroomText = (min: number, max: number) => {
-    if (min === max) return `${min} bed${min > 1 ? 's' : ''}`
-    return `${min}-${max} beds`
-  }
+  const budgetMin = buyer.budgetMin ?? buyer.budget
+  const budgetMax = buyer.budgetMax ?? buyer.budget
+  const bedsMin = buyer.minBeds
+  const bedsMax = buyer.maxBeds
+  const notes = buyer.description
 
   return (
-    <div className="card group hover:shadow-lg transition-all duration-200">
-      {/* Header with budget and property type */}
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <div className="text-2xl font-bold text-dark mb-1">
-            {formatCurrency(buyer.budget)}
-          </div>
-          <div className="flex items-center text-sm text-slate-600">
-            <Home className="w-4 h-4 mr-1" />
-            {buyer.propertyType} • {getBedroomText(buyer.minBeds, buyer.maxBeds)}
-          </div>
-        </div>
-        <div className="flex items-center text-xs text-slate-500">
-          <Calendar className="w-3 h-3 mr-1" />
-          {buyer.postedDate}
-        </div>
+    <div className="rounded-2xl border border-nest-line bg-white shadow-sm hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 transition p-5 sm:p-6 relative">
+      {/* Price - H1 large, tight, single line with en-dash */}
+      <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 whitespace-nowrap">
+        £{fmt(budgetMin)}–£{fmt(budgetMax)}
+      </h3>
+
+      {/* Fit summary row - icon + compact meta */}
+      <div className="mt-1 flex items-center gap-3 text-slate-700">
+        <Home className="h-4 w-4 text-nest-mint" />
+        <span className="text-sm sm:text-base">
+          {buyer.propertyType} • {bedsMin}{bedsMax && bedsMax !== bedsMin ? `–${bedsMax}` : ''} beds
+        </span>
       </div>
 
-      {/* Areas */}
-      <div className="mb-4">
-        <div className="flex items-center text-sm text-slate-600 mb-2">
-          <MapPin className="w-4 h-4 mr-1" />
-          Looking in:
+      {/* Divider */}
+      <div className="mt-4 h-px bg-nest-line/60" />
+
+      {/* Areas row */}
+      <div className="mt-4">
+        <div className="flex items-center gap-2 text-slate-700 mb-2">
+          <MapPin className="h-4 w-4 text-nest-mint" />
+          <span className="text-sm font-medium">Areas</span>
         </div>
-        <div className="flex flex-wrap gap-1">
-          {buyer.areas.map((area, index) => (
+        <div className="flex flex-wrap gap-2">
+          {buyer.areas.map((pc, index) => (
             <span
               key={index}
-              className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700"
+              className="inline-flex items-center rounded-full bg-nest-sageBg text-slate-700 text-xs font-medium px-2.5 py-1 border border-nest-line"
             >
-              {area}
+              {pc}
             </span>
           ))}
         </div>
       </div>
 
-      {/* Description */}
-      <div className="mb-6">
-        <p className="text-sm text-slate-600 line-clamp-3">
-          {buyer.description}
-        </p>
-      </div>
-
-      {/* Contact Button */}
-      <button
-        onClick={onContact}
-        className="w-full bg-nest-mint hover:bg-nest-mintHover text-white text-sm py-2.5 rounded-xl font-medium transition-colors"
-        aria-label={`Contact buyer looking for ${buyer.propertyType} up to ${formatCurrency(buyer.budget)}`}
+      {/* Notes - 2-line clamp + expand */}
+      <p
+        className={clsx(
+          'mt-4 text-slate-700 text-sm sm:text-base',
+          expanded ? '' : 'line-clamp-2'
+        )}
       >
-        I might have a property
-      </button>
+        {notes}
+      </p>
+      {notes && notes.length > 90 && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="mt-1 text-nest-sea text-sm hover:underline"
+        >
+          {expanded ? 'Show less' : 'Show more'}
+        </button>
+      )}
+
+      {/* CTA footer - inside card, sticky feel */}
+      <div className="mt-5">
+        <button
+          onClick={onContact}
+          className="w-full rounded-xl bg-nest-mint hover:bg-nest-mintHover text-white font-semibold py-3 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nest-sea"
+        >
+          I might have a property
+        </button>
+      </div>
     </div>
   )
 }

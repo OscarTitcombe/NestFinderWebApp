@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
+import { normalizePostcode } from '@/lib/postcode'
+import { useToast } from '@/lib/toast'
 
 // Zod validation schema
 const buyerFormSchema = z.object({
@@ -44,6 +46,7 @@ const buyerFormSchema = z.object({
 type BuyerFormData = z.infer<typeof buyerFormSchema>
 
 export default function BuyPage() {
+  const toast = useToast()
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -71,12 +74,43 @@ export default function BuyPage() {
   const onSubmit = async (data: BuyerFormData) => {
     setIsSubmitting(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    console.log('Buyer form data:', data)
-    setIsSubmitted(true)
-    setIsSubmitting(false)
+    try {
+      // Parse postcode districts from comma-separated string
+      const districts = data.areas
+        .split(',')
+        .map(area => {
+          const result = normalizePostcode(area.trim())
+          return result.ok ? result.district : null
+        })
+        .filter((district): district is string => district !== null)
+
+      if (districts.length === 0) {
+        throw new Error('Please enter at least one valid postcode district')
+      }
+
+      // Create buyer request in Supabase
+      const { createBuyerRequest } = await import('@/lib/supabase/queries')
+      
+      await createBuyerRequest({
+        budget_min: data.budgetMin,
+        budget_max: data.budgetMax,
+        beds_min: data.bedsMin,
+        beds_max: data.bedsMin, // Default to same as min, can be updated later
+        property_type: data.propertyType as 'flat' | 'house' | 'maisonette' | 'bungalow' | 'other' | 'any',
+        postcode_districts: districts,
+        description: data.notes,
+        email: data.email,
+        status: 'active'
+      })
+
+      setIsSubmitted(true)
+      toast.showToast('Your buyer request has been posted successfully!', 'success')
+    } catch (err: any) {
+      console.error('Error creating buyer request:', err)
+      toast.showToast(err.message || 'Failed to post your brief. Please try again.', 'error')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const formatCurrency = (amount: number) => {
@@ -142,7 +176,7 @@ export default function BuyPage() {
           </div>
 
           {/* Form */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 animate-fade-in">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Budget Range */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

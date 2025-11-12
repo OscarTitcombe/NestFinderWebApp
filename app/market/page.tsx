@@ -7,10 +7,17 @@ import PostcodeSearch from '@/components/PostcodeSearch'
 import FilterBar from '@/components/FilterBar'
 import BuyerCard from '@/components/BuyerCard'
 import ContactModal from '@/components/ContactModal'
+import { getBuyerRequests } from '@/lib/supabase/queries'
+import type { Database } from '@/lib/types/database'
+import { MarketGridSkeleton } from '@/components/Skeletons'
+
+type BuyerRequest = Database['public']['Tables']['buyer_requests']['Row']
 
 interface Buyer {
   id: string
   budget: number
+  budgetMin: number
+  budgetMax: number
   minBeds: number
   maxBeds: number
   propertyType: string
@@ -19,97 +26,45 @@ interface Buyer {
   postedDate: string
 }
 
-// Mock buyer data
-const mockBuyers: Buyer[] = [
-  {
-    id: '1',
-    budget: 450000,
-    minBeds: 2,
-    maxBeds: 3,
-    propertyType: 'Flat',
-    areas: ['SW1A', 'SW1B', 'SW1C'],
-    description: 'Looking for a modern flat near transport links. Must have parking.',
-    postedDate: '2 days ago'
-  },
-  {
-    id: '2',
-    budget: 750000,
-    minBeds: 3,
-    maxBeds: 4,
-    propertyType: 'House',
-    areas: ['SW1A', 'SW1B'],
-    description: 'Family home with garden preferred. Good schools nearby essential.',
-    postedDate: '1 day ago'
-  },
-  {
-    id: '3',
-    budget: 320000,
-    minBeds: 1,
-    maxBeds: 2,
-    propertyType: 'Flat',
-    areas: ['SW1A'],
-    description: 'First-time buyer looking for a starter home. Help to Buy eligible.',
-    postedDate: '3 days ago'
-  },
-  {
-    id: '4',
-    budget: 650000,
-    minBeds: 2,
-    maxBeds: 3,
-    propertyType: 'House',
-    areas: ['SW1A', 'SW1B', 'SW1C'],
-    description: 'Professional couple seeking period property with character.',
-    postedDate: '1 day ago'
-  },
-  {
-    id: '5',
-    budget: 850000,
-    minBeds: 4,
-    maxBeds: 5,
-    propertyType: 'House',
-    areas: ['SW1A', 'SW1B'],
-    description: 'Large family needing space. Garden and parking required.',
-    postedDate: '4 days ago'
-  },
-  {
-    id: '6',
-    budget: 280000,
-    minBeds: 1,
-    maxBeds: 1,
-    propertyType: 'Flat',
-    areas: ['SW1A'],
-    description: 'Studio or 1-bed flat for young professional. Near tube station.',
-    postedDate: '2 days ago'
-  },
-  {
-    id: '7',
-    budget: 550000,
-    minBeds: 2,
-    maxBeds: 3,
-    propertyType: 'Flat',
-    areas: ['SW1A', 'SW1B'],
-    description: 'Modern apartment with balcony. No chain, ready to move quickly.',
-    postedDate: '1 day ago'
-  },
-  {
-    id: '8',
-    budget: 950000,
-    minBeds: 3,
-    maxBeds: 4,
-    propertyType: 'House',
-    areas: ['SW1A'],
-    description: 'Victorian or Edwardian house with period features. Must be freehold.',
-    postedDate: '3 days ago'
-  }
-]
+// Helper function to format relative time
+function formatRelativeTime(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  
+  if (diffInSeconds < 60) return 'Just now'
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minute${Math.floor(diffInSeconds / 60) > 1 ? 's' : ''} ago`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hour${Math.floor(diffInSeconds / 3600) > 1 ? 's' : ''} ago`
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} day${Math.floor(diffInSeconds / 86400) > 1 ? 's' : ''} ago`
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)} week${Math.floor(diffInSeconds / 604800) > 1 ? 's' : ''} ago`
+  return `${Math.floor(diffInSeconds / 2592000)} month${Math.floor(diffInSeconds / 2592000) > 1 ? 's' : ''} ago`
+}
 
+// Convert database buyer request to component buyer format
+function convertBuyerRequest(request: BuyerRequest): Buyer {
+  return {
+    id: request.id,
+    budget: request.budget_max, // Use max budget for display
+    budgetMin: request.budget_min,
+    budgetMax: request.budget_max,
+    minBeds: request.beds_min,
+    maxBeds: request.beds_max || request.beds_min,
+    propertyType: request.property_type.charAt(0).toUpperCase() + request.property_type.slice(1),
+    areas: request.postcode_districts,
+    description: request.description,
+    postedDate: formatRelativeTime(request.created_at)
+  }
+}
 export default function MarketPage() {
   const searchParams = useSearchParams()
   const [postcode, setPostcode] = useState<string | null>(null)
   const [normalizedPostcode, setNormalizedPostcode] = useState<string | null>(null)
-  const [filteredBuyers, setFilteredBuyers] = useState<Buyer[]>(mockBuyers)
+  const [buyers, setBuyers] = useState<Buyer[]>([])
+  const [filteredBuyers, setFilteredBuyers] = useState<Buyer[]>([])
   const [selectedBuyer, setSelectedBuyer] = useState<Buyer | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [quizAnswers, setQuizAnswers] = useState<{
     propertyType: string
     budget: string
@@ -117,6 +72,30 @@ export default function MarketPage() {
     timeframe: string
     features: string[]
   } | null>(null)
+
+  // Fetch buyer requests from Supabase
+  useEffect(() => {
+    const fetchBuyers = async () => {
+      if (!normalizedPostcode) return
+
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const requests = await getBuyerRequests(normalizedPostcode)
+        const convertedBuyers = requests.map(convertBuyerRequest)
+        setBuyers(convertedBuyers)
+        setFilteredBuyers(convertedBuyers)
+      } catch (err: any) {
+        console.error('Error fetching buyers:', err)
+        setError('Failed to load buyer requests. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchBuyers()
+  }, [normalizedPostcode])
 
   useEffect(() => {
     const postcodeParam = searchParams.get('postcode')
@@ -152,12 +131,12 @@ export default function MarketPage() {
     beds: number
     propertyType: string
   }) => {
-    const filtered = mockBuyers.filter(buyer => {
+    const filtered = buyers.filter(buyer => {
       return (
-        buyer.budget >= filters.minBudget &&
-        buyer.budget <= filters.maxBudget &&
+        buyer.budgetMax >= filters.minBudget &&
+        buyer.budgetMin <= filters.maxBudget &&
         (filters.beds === 0 || (buyer.minBeds <= filters.beds && buyer.maxBeds >= filters.beds)) &&
-        (filters.propertyType === 'Any' || buyer.propertyType === filters.propertyType)
+        (filters.propertyType === 'Any' || buyer.propertyType.toLowerCase() === filters.propertyType.toLowerCase())
       )
     })
     setFilteredBuyers(filtered)
@@ -250,7 +229,25 @@ export default function MarketPage() {
 
       {/* Buyer Grid */}
       <div className="container-custom py-8">
-        {filteredBuyers.length === 0 ? (
+        {isLoading ? (
+          <MarketGridSkeleton count={6} />
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-dark mb-2">Error loading buyers</h3>
+            <p className="text-slate-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn-primary"
+            >
+              Try again
+            </button>
+          </div>
+        ) : filteredBuyers.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,12 +259,18 @@ export default function MarketPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredBuyers.map((buyer) => (
-              <BuyerCard
+            {filteredBuyers.map((buyer, index) => (
+              <div
                 key={buyer.id}
-                buyer={buyer}
-                onContact={() => handleContactBuyer(buyer)}
-              />
+                style={{
+                  animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`
+                }}
+              >
+                <BuyerCard
+                  buyer={buyer}
+                  onContact={() => handleContactBuyer(buyer)}
+                />
+              </div>
             ))}
           </div>
         )}

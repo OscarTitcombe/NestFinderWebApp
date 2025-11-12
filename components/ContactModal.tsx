@@ -2,10 +2,13 @@
 
 import { useState } from 'react'
 import { X, Mail, Home, Calendar } from 'lucide-react'
+import { useToast } from '@/lib/toast'
 
 interface Buyer {
   id: string
   budget: number
+  budgetMin?: number
+  budgetMax?: number
   minBeds: number
   maxBeds: number
   propertyType: string
@@ -20,6 +23,7 @@ interface ContactModalProps {
 }
 
 export default function ContactModal({ buyer, onClose }: ContactModalProps) {
+  const toast = useToast()
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -33,6 +37,17 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
     }).format(amount)
   }
 
+  // Format money helper - returns number with commas, no currency symbol
+  const fmt = (amount: number) => {
+    return new Intl.NumberFormat('en-GB', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
+
+  const budgetMin = buyer.budgetMin ?? buyer.budget
+  const budgetMax = buyer.budgetMax ?? buyer.budget
+
   const getBedroomText = (min: number, max: number) => {
     if (min === max) return `${min} bed${min > 1 ? 's' : ''}`
     return `${min}-${max} beds`
@@ -42,14 +57,28 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
     e.preventDefault()
     setIsSubmitting(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Reset form and close modal
-    setEmail('')
-    setMessage('')
-    setIsSubmitting(false)
-    onClose()
+    try {
+      const { createContact } = await import('@/lib/supabase/queries')
+      
+      await createContact({
+        buyer_request_id: buyer.id,
+        seller_email: email,
+        message: message,
+        status: 'pending'
+      })
+      
+      // Reset form and close modal
+      setEmail('')
+      setMessage('')
+      setIsSubmitting(false)
+      onClose()
+      
+      toast.showToast('Message sent! The buyer will be notified.', 'success')
+    } catch (err: any) {
+      console.error('Error sending message:', err)
+      toast.showToast(err.message || 'Failed to send message. Please try again.', 'error')
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -63,7 +92,7 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-scale-in">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-slate-200">
             <div>
@@ -86,7 +115,7 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="text-lg font-semibold text-dark">
-                  {formatCurrency(buyer.budget)}
+                  £{fmt(budgetMin)}–£{fmt(budgetMax)}
                 </div>
                 <div className="flex items-center text-sm text-slate-600">
                   <Home className="w-4 h-4 mr-1" />

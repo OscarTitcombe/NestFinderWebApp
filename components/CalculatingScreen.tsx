@@ -85,7 +85,7 @@ export default function CalculatingScreen({
   const IconComponent = currentStepData.icon
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-12">
+    <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-12 animate-fade-in">
       <div className="container-custom max-w-2xl text-center">
           {/* Header */}
           <div className="mb-12">
@@ -94,9 +94,24 @@ export default function CalculatingScreen({
             </h1>
           </div>
 
+          {/* Current Step Display */}
+          <div className="mb-8 animate-fade-in">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-nest-mint/10 rounded-full flex items-center justify-center">
+                <IconComponent className="w-8 h-8 text-nest-mint" />
+              </div>
+            </div>
+            <h2 className="text-xl font-semibold text-dark mb-2">
+              {currentStepData.title}
+            </h2>
+            <p className="text-slate-600">
+              {currentStepData.description}
+            </p>
+          </div>
+
           {/* Main Progress Bar */}
           <div className="mb-8">
-            <div className="w-full bg-slate-200 rounded-full h-4 mb-4">
+            <div className="w-full bg-slate-200 rounded-full h-4 mb-4 overflow-hidden">
               <div 
                 className="bg-nest-mint h-4 rounded-full transition-all duration-100 ease-out"
                 style={{ width: `${progress}%` }}

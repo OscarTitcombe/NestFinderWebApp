@@ -190,7 +190,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
               {currentStepData.options.map((option) => {
@@ -202,13 +202,15 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
                      currentStep === 2 ? 'bedrooms' : 'timeframe') as keyof QuizAnswers] === option.value
 
                 return (
-                  <button
+                  <motion.button
                     key={option.value}
                     onClick={() => handleAnswer(option.value)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     className={`p-4 sm:p-6 rounded-xl border-2 text-left transition-all duration-200 min-h-[60px] sm:min-h-[80px] flex items-center ${
                       isSelected
                         ? 'border-nest-mint bg-nest-mint/5 shadow-md'
-                        : 'border-nest-line hover:border-nest-mint hover:shadow-sm active:scale-[0.98]'
+                        : 'border-nest-line hover:border-nest-mint hover:shadow-sm'
                     }`}
                   >
                     <div className="flex items-center w-full">
@@ -225,7 +227,7 @@ export default function PropertyQuiz({ postcode, onComplete, onBack }: PropertyQ
                         </div>
                       )}
                     </div>
-                  </button>
+                  </motion.button>
                 )
               })}
             </div>

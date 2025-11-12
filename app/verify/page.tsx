@@ -1,10 +1,11 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle, AlertTriangle, XCircle, ArrowRight, Home } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
+import { verifyOtp } from '@/lib/supabase/auth'
 
 type VerificationStatus = 'success' | 'expired' | 'invalid' | 'loading'
 
@@ -21,43 +22,58 @@ interface VerificationState {
 
 export default function VerifyPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [verificationState, setVerificationState] = useState<VerificationState | null>(null)
 
   useEffect(() => {
-    const status = searchParams.get('status') as VerificationStatus
-    
-    const states: Record<VerificationStatus, VerificationState> = {
-      success: {
-        status: 'success',
-        title: 'Email verified — your brief is now visible.',
-        message: 'Your property brief has been verified and is now live on the market. Sellers can now see your requirements and contact you directly.',
-        icon: CheckCircle,
-        iconColor: 'text-green-600',
-        iconBgColor: 'bg-green-100',
-        buttonColor: 'bg-primary hover:bg-[#7A9A3A]',
-        buttonHoverColor: 'hover:bg-[#7A9A3A]'
-      },
-      expired: {
-        status: 'expired',
-        title: 'That link has expired. Request a new one.',
-        message: 'Email verification links expire after 24 hours for security. Please request a new verification email to activate your property brief.',
-        icon: AlertTriangle,
-        iconColor: 'text-yellow-600',
-        iconBgColor: 'bg-yellow-100',
-        buttonColor: 'bg-yellow-600 hover:bg-yellow-700',
-        buttonHoverColor: 'hover:bg-yellow-700'
-      },
-      invalid: {
-        status: 'invalid',
-        title: 'That link looks invalid.',
-        message: 'The verification link you clicked appears to be corrupted or malformed. Please check your email for the correct verification link.',
-        icon: XCircle,
-        iconColor: 'text-red-600',
-        iconBgColor: 'bg-red-100',
-        buttonColor: 'bg-red-600 hover:bg-red-700',
-        buttonHoverColor: 'hover:bg-red-700'
-      },
-      loading: {
+    const handleVerification = async () => {
+      // Parse hash fragment (Supabase magic links use hash fragments)
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const error = hashParams.get('error') || searchParams.get('error')
+      const errorCode = hashParams.get('error_code') || searchParams.get('error_code')
+      const errorDescription = hashParams.get('error_description') || searchParams.get('error_description')
+      
+      // Handle errors from Supabase
+      if (error) {
+        console.error('Auth error:', { error, errorCode, errorDescription })
+        
+        if (errorCode === 'otp_expired' || errorCode === 'expired_token') {
+          setVerificationState({
+            status: 'expired',
+            title: 'That link has expired',
+            message: 'Email verification links expire after a short time for security. Please request a new magic link.',
+            icon: AlertTriangle,
+            iconColor: 'text-yellow-600',
+            iconBgColor: 'bg-yellow-100',
+            buttonColor: 'bg-yellow-600 hover:bg-yellow-700',
+            buttonHoverColor: 'hover:bg-yellow-700'
+          })
+        } else {
+          setVerificationState({
+            status: 'invalid',
+            title: 'Verification failed',
+            message: errorDescription || 'The verification link appears to be invalid. Please try signing in again.',
+            icon: XCircle,
+            iconColor: 'text-red-600',
+            iconBgColor: 'bg-red-100',
+            buttonColor: 'bg-red-600 hover:bg-red-700',
+            buttonHoverColor: 'hover:bg-red-700'
+          })
+        }
+        return
+      }
+
+      // Check for token in hash fragment (Supabase magic links)
+      const token = hashParams.get('access_token') || hashParams.get('token') || searchParams.get('token')
+      const email = hashParams.get('email') || searchParams.get('email')
+      const type = hashParams.get('type') || searchParams.get('type')
+
+      // Supabase magic links automatically create a session when the user clicks the link
+      // So we should check if we have a session first
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      
+      setVerificationState({
         status: 'loading',
         title: 'Verifying your email...',
         message: 'Please wait while we verify your email address.',
@@ -66,16 +82,100 @@ export default function VerifyPage() {
         iconBgColor: 'bg-slate-100',
         buttonColor: 'bg-slate-600 hover:bg-slate-700',
         buttonHoverColor: 'hover:bg-slate-700'
+      })
+
+      // Check if session already exists (Supabase handles this automatically)
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (session && !sessionError) {
+        // Session exists, verification successful
+        setVerificationState({
+          status: 'success',
+          title: 'Email verified — you\'re signed in!',
+          message: 'Your email has been verified and you\'re now signed in. You can now post your brief or browse the market.',
+          icon: CheckCircle,
+          iconColor: 'text-green-600',
+          iconBgColor: 'bg-green-100',
+          buttonColor: 'bg-primary hover:bg-[#7A9A3A]',
+          buttonHoverColor: 'hover:bg-[#7A9A3A]'
+        })
+        // Redirect after a short delay
+        setTimeout(() => {
+          router.push('/market')
+        }, 2000)
+        return
       }
+
+      // If no session and we have a token, try explicit verification
+      if (token && email) {
+        try {
+          await verifyOtp(email, token)
+          setVerificationState({
+            status: 'success',
+            title: 'Email verified — you\'re signed in!',
+            message: 'Your email has been verified and you\'re now signed in. You can now post your brief or browse the market.',
+            icon: CheckCircle,
+            iconColor: 'text-green-600',
+            iconBgColor: 'bg-green-100',
+            buttonColor: 'bg-primary hover:bg-[#7A9A3A]',
+            buttonHoverColor: 'hover:bg-[#7A9A3A]'
+          })
+          // Redirect after a short delay
+          setTimeout(() => {
+            router.push('/market')
+          }, 2000)
+        } catch (error: any) {
+          console.error('Verification error:', error)
+          setVerificationState({
+            status: 'invalid',
+            title: 'Verification failed',
+            message: error.message || 'The verification link appears to be invalid or expired. Please try signing in again.',
+            icon: XCircle,
+            iconColor: 'text-red-600',
+            iconBgColor: 'bg-red-100',
+            buttonColor: 'bg-red-600 hover:bg-red-700',
+            buttonHoverColor: 'hover:bg-red-700'
+          })
+        }
+        return
+      }
+
+      // No token or session found - check if we're just waiting
+      // Sometimes Supabase needs a moment to process
+      setTimeout(async () => {
+        const { data: { session: retrySession } } = await supabase.auth.getSession()
+        if (retrySession) {
+          setVerificationState({
+            status: 'success',
+            title: 'Email verified — you\'re signed in!',
+            message: 'Your email has been verified and you\'re now signed in. You can now post your brief or browse the market.',
+            icon: CheckCircle,
+            iconColor: 'text-green-600',
+            iconBgColor: 'bg-green-100',
+            buttonColor: 'bg-primary hover:bg-[#7A9A3A]',
+            buttonHoverColor: 'hover:bg-[#7A9A3A]'
+          })
+          setTimeout(() => {
+            router.push('/market')
+          }, 2000)
+        } else {
+          // No token found
+          setVerificationState({
+            status: 'invalid',
+            title: 'Invalid verification link',
+            message: 'The verification link is missing required information. Please try signing in again.',
+            icon: XCircle,
+            iconColor: 'text-red-600',
+            iconBgColor: 'bg-red-100',
+            buttonColor: 'bg-red-600 hover:bg-red-700',
+            buttonHoverColor: 'hover:bg-red-700'
+          })
+        }
+      }, 1000)
     }
 
-    if (status && states[status]) {
-      setVerificationState(states[status])
-    } else {
-      // Default to invalid if no status or unrecognized status
-      setVerificationState(states.invalid)
-    }
-  }, [searchParams])
+    handleVerification()
+  }, [searchParams, router])
 
   if (!verificationState) {
     return (
@@ -135,9 +235,14 @@ export default function VerifyPage() {
 
               {verificationState.status === 'expired' && (
                 <>
-                  <PrimaryButton className="w-full">
-                    Request new verification
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                  <PrimaryButton 
+                    asChild
+                    className="w-full"
+                  >
+                    <Link href="/signin">
+                      Request new magic link
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
                   </PrimaryButton>
                   
                   <GhostButton asChild className="w-full">
@@ -152,8 +257,8 @@ export default function VerifyPage() {
               {verificationState.status === 'invalid' && (
                 <>
                   <PrimaryButton asChild className="w-full">
-                    <Link href="/buy">
-                      Post your brief again
+                    <Link href="/signin">
+                      Try signing in again
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                   </PrimaryButton>
