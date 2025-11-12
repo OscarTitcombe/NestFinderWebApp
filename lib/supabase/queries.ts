@@ -32,7 +32,7 @@ export async function getBuyerRequests(postcodeDistrict?: string) {
   return data as BuyerRequest[]
 }
 
-export async function createBuyerRequest(request: BuyerRequestInsert) {
+export async function createBuyerRequest(request: Omit<BuyerRequestInsert, 'user_id'>) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
