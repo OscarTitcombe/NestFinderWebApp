@@ -147,7 +147,7 @@ export async function getSellerProperties(postcodeDistrict?: string) {
   return data as SellerProperty[]
 }
 
-export async function createSellerProperty(property: SellerPropertyInsert) {
+export async function createSellerProperty(property: Omit<SellerPropertyInsert, 'user_id'>) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
