@@ -110,7 +110,7 @@ You can reply directly to the seller at ${sellerEmail} or view all your messages
 
     // Send email
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'NestFinder <notifications@nestfinder.com>',
+      from: process.env.RESEND_FROM_EMAIL || 'NestFinder <onboarding@resend.dev>',
       to: [to],
       subject: `New message about your ${formatCurrency(buyerRequest.budget_min)} - ${formatCurrency(buyerRequest.budget_max)} buyer request`,
       html: emailHtml,

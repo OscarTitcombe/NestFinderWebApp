@@ -247,18 +247,6 @@ export async function createContact(contact: Omit<ContactInsert, 'seller_id'>) {
     throw new Error('User must be authenticated to create a contact')
   }
 
-  // Get buyer request details for email notification
-  const { data: buyerRequest, error: buyerRequestError } = await supabase
-    .from('buyer_requests')
-    .select('*')
-    .eq('id', contact.buyer_request_id)
-    .single()
-
-  if (buyerRequestError) {
-    console.error('Error fetching buyer request:', buyerRequestError)
-    throw buyerRequestError
-  }
-
   // Create the contact
   const { data, error } = await supabase
     .from('contacts')
@@ -274,35 +262,8 @@ export async function createContact(contact: Omit<ContactInsert, 'seller_id'>) {
     throw error
   }
 
-  // Send email notification to buyer (don't block on failure)
-  try {
-    const response = await fetch('/api/send-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to: buyerRequest.email,
-        buyerRequest: {
-          budget_min: buyerRequest.budget_min,
-          budget_max: buyerRequest.budget_max,
-          beds_min: buyerRequest.beds_min,
-          beds_max: buyerRequest.beds_max,
-          property_type: buyerRequest.property_type,
-          postcode_districts: buyerRequest.postcode_districts,
-        },
-        sellerEmail: contact.seller_email,
-        message: contact.message,
-      }),
-    })
-
-    if (!response.ok) {
-      console.error('Failed to send email notification, but contact was created')
-    }
-  } catch (emailError) {
-    // Don't fail the contact creation if email fails
-    console.error('Error sending email notification:', emailError)
-  }
+  // Email notifications disabled - contacts are saved but no emails are sent
+  // To re-enable: uncomment the email sending code below and set up RESEND_API_KEY
 
   return data as Contact
 }
