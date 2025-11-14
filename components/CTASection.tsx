@@ -19,6 +19,19 @@ export default function CTASection() {
       <div className="relative nf-container">
         <div className="text-center max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* For Buyers */}
+            <div className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition">
+              <h3 className="font-semibold text-[#101314] mb-2">For Buyers</h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Post your property brief and let sellers find you. Connect privately and explore your options.
+              </p>
+              <PrimaryButton asChild className="!bg-nest-sea hover:!bg-nest-seaHover focus-visible:!ring-nest-sea">
+                <Link href="/buy">
+                  Create your private brief
+                </Link>
+              </PrimaryButton>
+            </div>
+
             {/* For Sellers */}
             <div className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition">
               <h3 className="font-semibold text-[#101314] mb-2">For Sellers</h3>
@@ -28,19 +41,6 @@ export default function CTASection() {
               <PrimaryButton asChild>
                 <Link href="/market">
                   Explore pre-market demand
-                </Link>
-              </PrimaryButton>
-            </div>
-
-            {/* For Buyers */}
-            <div className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition">
-              <h3 className="font-semibold text-[#101314] mb-2">For Buyers</h3>
-              <p className="text-sm text-slate-600 mb-4">
-                Post your property brief and let sellers find you. Connect privately and explore your options.
-              </p>
-              <PrimaryButton asChild className="!bg-nest-sea hover:!bg-[#5AA5B3] focus-visible:!ring-nest-sea">
-                <Link href="/buy">
-                  Create your private brief
                 </Link>
               </PrimaryButton>
             </div>

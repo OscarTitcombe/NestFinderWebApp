@@ -21,27 +21,33 @@ export default function PostcodeSearch({
   mode = 'seller'
 }: PostcodeSearchProps) {
   const [postcode, setPostcode] = useState('')
-  const [error, setError] = useState('')
+  const [showHighlight, setShowHighlight] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    setShowHighlight(false)
     setIsLoading(true)
 
     try {
-      // Buyer mode: navigate directly to /buy page
+      // Buyer mode: navigate directly to /buy page (no postcode required)
       if (mode === 'buyer') {
         router.push('/buy')
         return
       }
 
       // Seller mode: validate postcode and navigate to quiz
+      if (!postcode.trim()) {
+        setShowHighlight(true)
+        setIsLoading(false)
+        return
+      }
+
       const result = normalizePostcode(postcode)
       
       if (!result.ok) {
-        setError(result.error || 'Invalid postcode')
+        setShowHighlight(true)
         setIsLoading(false)
         return
       }
@@ -49,14 +55,14 @@ export default function PostcodeSearch({
       // Navigate to quiz page with normalized postcode
       router.push(`/quiz?postcode=${encodeURIComponent(result.district!)}`)
     } catch (err) {
-      setError('Something went wrong. Please try again.')
+      setShowHighlight(true)
       setIsLoading(false)
     }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPostcode(e.target.value)
-    if (error) setError('') // Clear error when user starts typing
+    if (showHighlight) setShowHighlight(false) // Clear highlight when user starts typing
   }
 
   return (
@@ -72,28 +78,27 @@ export default function PostcodeSearch({
             value={postcode}
             onChange={handleInputChange}
             placeholder={placeholder}
-            className={`input-primary ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
+            className={`input-primary ${
+              showHighlight 
+                ? mode === 'buyer' 
+                  ? 'border-nest-sea focus:ring-nest-sea focus:border-nest-sea' 
+                  : 'border-nest-mint focus:ring-nest-mint focus:border-nest-mint'
+                : ''
+            }`}
             aria-describedby={showHelperText ? "postcode-helper" : undefined}
-            aria-invalid={error ? 'true' : 'false'}
             disabled={isLoading}
             autoComplete="postal-code"
           />
-          {error && (
-            <p className="mt-2 text-sm text-red-600" role="alert">
-              {error}
-            </p>
-          )}
         </div>
         <PrimaryButton
           type="submit"
-          disabled={isLoading || (mode === 'seller' && !postcode.trim())}
+          disabled={isLoading}
           className={`
-            whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed
+            whitespace-nowrap disabled:cursor-not-allowed
             ${mode === 'buyer' 
-              ? '!bg-nest-sea hover:!bg-[#5AA5B3] focus-visible:!ring-nest-sea' 
+              ? '!bg-nest-sea hover:!bg-nest-seaHover focus-visible:!ring-nest-sea' 
               : ''
             }
-            ${!postcode.trim() && !isLoading ? 'opacity-60' : ''}
           `}
         >
           {isLoading ? (
@@ -109,7 +114,15 @@ export default function PostcodeSearch({
       
       {showHelperText && (
         <p id="postcode-helper" className="mt-3 text-sm text-slate-600 text-center">
-          Free to browse. No sign-up required for sellers.
+          {mode === 'buyer' 
+            ? (
+              <>
+                <span className="sm:hidden">Let homeowners know what you're searching for.</span>
+                <span className="hidden sm:inline">Let homeowners know what you're searching for — privately and securely.</span>
+              </>
+            )
+            : "Free to browse. No sign-up required for sellers."
+          }
         </p>
       )}
     </form>

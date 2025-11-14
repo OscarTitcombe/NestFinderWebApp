@@ -73,3 +73,4 @@ CREATE TRIGGER on_contact_created
 
 **Note:** This requires the `http` extension and service role key setup. The Next.js API route approach is simpler for most use cases.
 
+

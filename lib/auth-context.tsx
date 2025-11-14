@@ -63,7 +63,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (hasInitialized.current) return
     hasInitialized.current = true
 
-    const supabase = createClient()
+    let supabase
+    try {
+      supabase = createClient()
+    } catch (error) {
+      console.error('Failed to initialize Supabase client:', error)
+      setIsLoading(false)
+      return
+    }
 
     // Load cached user immediately on client (after hydration)
     // This happens synchronously so there's no flash

@@ -13,9 +13,10 @@ module.exports = {
         dark: '#101314',
         light: '#F7F9FC',
         nest: {
-          mint: '#8DC8A9',       // pale green (primary CTA) - less saturated
-          mintHover: '#7BBF9D',  // CTA hover
-          sea: '#6BB8C5',        // paler blue (secondary accents/links) - lighter tone
+          mint: '#92D6A3',       // pale green (primary CTA) - less saturated
+          mintHover: '#88CC9A',  // CTA hover - slightly darker
+          sea: '#91C8ED',        // paler blue (secondary accents/links)
+          seaHover: '#84BEDB',   // sea hover - slightly darker
           sageBg: '#F7FAF8',     // very light section bg
           sageAlt: '#EAF3EC',    // CTA section bg
           line: '#E1EDE6'        // card borders/dividers

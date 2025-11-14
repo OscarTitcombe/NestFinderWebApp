@@ -1,8 +1,30 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import HeroCtaTabs from './HeroCtaTabs'
 
+type Mode = 'buyer' | 'seller'
+
 export default function Hero() {
+  const [mode, setMode] = useState<Mode>('buyer')
+
+  // Initialize mode from URL or localStorage on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const params = new URLSearchParams(window.location.search)
+    const urlMode = params.get('mode')
+    
+    if (urlMode === 'buyer' || urlMode === 'seller') {
+      setMode(urlMode)
+    } else {
+      const savedMode = localStorage.getItem('nestfinder_mode') as Mode | null
+      if (savedMode === 'buyer' || savedMode === 'seller') {
+        setMode(savedMode)
+      }
+    }
+  }, [])
+
   return (
     <section className="relative">
       {/* Background Map Image */}
@@ -28,14 +50,15 @@ export default function Hero() {
           
           {/* Subheading */}
           <p className="mt-3 text-lg sm:text-xl text-[#2B3135]">
-            Explore your local housing network.
-            <br />
-            Discover active buyers and potential homes nearby.
+            {mode === 'buyer' 
+              ? "A better way to share what you're searching for."
+              : "Browse and connect with prospective buyers in your area."
+            }
           </p>
 
           {/* Tabbed CTA */}
           <div className="mt-8">
-            <HeroCtaTabs />
+            <HeroCtaTabs onModeChange={setMode} initialMode={mode} />
           </div>
         </div>
       </div>
