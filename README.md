@@ -12,6 +12,16 @@ A reverse property marketplace landing page built with Next.js 14, TypeScript, a
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 20.0.0 or later
+- npm 10.0.0 or later
+
+If you're using [nvm](https://github.com/nvm-sh/nvm), you can automatically switch to the correct Node.js version:
+```bash
+nvm use
+```
+
 1. Install dependencies:
 ```bash
 npm install

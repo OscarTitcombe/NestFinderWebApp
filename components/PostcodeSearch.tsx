@@ -78,13 +78,21 @@ export default function PostcodeSearch({
             value={postcode}
             onChange={handleInputChange}
             placeholder={placeholder}
-            className={`input-primary ${
-              showHighlight 
-                ? mode === 'buyer' 
-                  ? 'border-nest-sea focus:ring-nest-sea focus:border-nest-sea' 
-                  : 'border-nest-mint focus:ring-nest-mint focus:border-nest-mint'
-                : ''
-            }`}
+            className={`
+              w-full rounded-xl border bg-white px-4 py-3 text-base 
+              focus:outline-none focus:ring-2 transition-all duration-200
+              ${mode === 'buyer' 
+                ? 'border-nest-line focus:ring-nest-mint focus:border-nest-mint' 
+                : 'border-nest-line focus:ring-nest-sea focus:border-nest-sea'
+              }
+              ${
+                showHighlight 
+                  ? mode === 'buyer' 
+                    ? 'border-nest-sea' 
+                    : 'border-nest-mint'
+                  : ''
+              }
+            `}
             aria-describedby={showHelperText ? "postcode-helper" : undefined}
             disabled={isLoading}
             autoComplete="postal-code"
