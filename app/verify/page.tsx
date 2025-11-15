@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { CheckCircle, AlertTriangle, XCircle, ArrowRight, Home } from 'lucide-react'
+import { CheckCircle, AlertTriangle, XCircle, ArrowRight, Home, Mail, Sparkles, Loader2, Clock } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
 import { verifyOtp } from '@/lib/supabase/auth'
 
@@ -40,13 +40,13 @@ export default function VerifyPage() {
         if (errorCode === 'otp_expired' || errorCode === 'expired_token') {
           setVerificationState({
             status: 'expired',
-            title: 'That link has expired',
-            message: 'Email verification links expire after a short time for security. Please request a new magic link.',
-            icon: AlertTriangle,
-            iconColor: 'text-yellow-600',
-            iconBgColor: 'bg-yellow-100',
-            buttonColor: 'bg-yellow-600 hover:bg-yellow-700',
-            buttonHoverColor: 'hover:bg-yellow-700'
+            title: 'Link has expired',
+            message: 'This magic link has expired. Magic links expire after 1 hour for security. Request a new one to continue.',
+            icon: Clock,
+            iconColor: 'text-amber-600',
+            iconBgColor: 'bg-amber-100',
+            buttonColor: 'bg-nest-mint hover:bg-nest-mintHover',
+            buttonHoverColor: 'hover:bg-nest-mintHover'
           })
         } else {
           setVerificationState({
@@ -77,9 +77,9 @@ export default function VerifyPage() {
         status: 'loading',
         title: 'Verifying your email...',
         message: 'Please wait while we verify your email address.',
-        icon: CheckCircle,
-        iconColor: 'text-slate-600',
-        iconBgColor: 'bg-slate-100',
+        icon: Loader2,
+        iconColor: 'text-nest-mint',
+        iconBgColor: 'bg-nest-mint/10',
         buttonColor: 'bg-slate-600 hover:bg-slate-700',
         buttonHoverColor: 'hover:bg-slate-700'
       })
@@ -112,13 +112,13 @@ export default function VerifyPage() {
           await verifyOtp(email, token)
           setVerificationState({
             status: 'success',
-            title: 'Email verified — you\'re signed in!',
-            message: 'Your email has been verified and you\'re now signed in. You can now post your brief or browse the market.',
+            title: 'You\'re signed in!',
+            message: 'Welcome to NestFinder! Your email has been verified and you\'re ready to start.',
             icon: CheckCircle,
-            iconColor: 'text-green-600',
-            iconBgColor: 'bg-green-100',
-            buttonColor: 'bg-primary hover:bg-[#7A9A3A]',
-            buttonHoverColor: 'hover:bg-[#7A9A3A]'
+            iconColor: 'text-nest-mint',
+            iconBgColor: 'bg-nest-mint/10',
+            buttonColor: 'bg-nest-mint hover:bg-nest-mintHover',
+            buttonHoverColor: 'hover:bg-nest-mintHover'
           })
           // Redirect after a short delay
           setTimeout(() => {
@@ -147,13 +147,13 @@ export default function VerifyPage() {
         if (retrySession) {
           setVerificationState({
             status: 'success',
-            title: 'Email verified — you\'re signed in!',
-            message: 'Your email has been verified and you\'re now signed in. You can now post your brief or browse the market.',
+            title: 'You\'re signed in!',
+            message: 'Welcome to NestFinder! Your email has been verified and you\'re ready to start.',
             icon: CheckCircle,
-            iconColor: 'text-green-600',
-            iconBgColor: 'bg-green-100',
-            buttonColor: 'bg-primary hover:bg-[#7A9A3A]',
-            buttonHoverColor: 'hover:bg-[#7A9A3A]'
+            iconColor: 'text-nest-mint',
+            iconBgColor: 'bg-nest-mint/10',
+            buttonColor: 'bg-nest-mint hover:bg-nest-mintHover',
+            buttonHoverColor: 'hover:bg-nest-mintHover'
           })
           setTimeout(() => {
             router.push('/market')
@@ -179,75 +179,107 @@ export default function VerifyPage() {
 
   if (!verificationState) {
     return (
-      <div className="min-h-screen bg-nest-sageBg flex items-center justify-center">
-        <div className="nf-container">
-          <div className="text-center">
-            <p className="text-slate-600">Loading...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-nest-mint animate-spin mx-auto mb-3" />
+          <p className="text-slate-600">Loading...</p>
         </div>
       </div>
     )
   }
 
   const IconComponent = verificationState.icon
+  const isSuccess = verificationState.status === 'success'
+  const isExpired = verificationState.status === 'expired'
+  const isLoading = verificationState.status === 'loading'
 
   return (
-    <div className="min-h-screen bg-nest-sageBg flex items-center justify-center">
-      <div className="nf-container">
-        <div className="max-w-md mx-auto">
-          {/* Verification Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-nest-line p-8 text-center">
-            {/* Icon */}
-            <div className={`w-16 h-16 ${verificationState.iconBgColor} rounded-full flex items-center justify-center mx-auto mb-6`}>
-              <IconComponent className={`w-8 h-8 ${verificationState.iconColor}`} />
+    <div className="w-full py-8 sm:py-12">
+      <div className="max-w-lg mx-auto px-3 sm:px-4 lg:px-8 w-full">
+        {/* Verification Card */}
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 text-center animate-fade-in">
+          {/* Icon */}
+          <div className={`w-16 h-16 sm:w-20 sm:h-20 ${verificationState.iconBgColor} rounded-full flex items-center justify-center mx-auto mb-5 sm:mb-6 ${
+            isLoading ? 'animate-pulse' : 'animate-scale-in'
+          }`}>
+            {isLoading ? (
+              <Loader2 className={`w-8 h-8 sm:w-10 sm:h-10 ${verificationState.iconColor} animate-spin`} />
+            ) : (
+              <IconComponent className={`w-8 h-8 sm:w-10 sm:h-10 ${verificationState.iconColor}`} />
+            )}
+          </div>
+
+          {/* Title */}
+          <h1 className="text-2xl sm:text-3xl font-bold text-dark mb-3 sm:mb-4">
+            {verificationState.title}
+          </h1>
+
+          {/* Message */}
+          <p className="text-sm sm:text-base text-slate-600 mb-6 sm:mb-8 leading-relaxed max-w-md mx-auto">
+            {verificationState.message}
+          </p>
+
+          {/* Success-specific content */}
+          {isSuccess && (
+            <div className="bg-nest-sageBg rounded-lg p-4 sm:p-5 mb-6 sm:mb-8 border border-nest-line">
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-slate-600">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-nest-mint" />
+                  <span>Ready to get started</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-nest-mint" />
+                  <span>Email verified</span>
+                </div>
+              </div>
             </div>
+          )}
 
-            {/* Title */}
-            <h1 className="text-2xl font-bold text-slate-900 mb-4">
-              {verificationState.title}
-            </h1>
+          {/* Expired-specific content */}
+          {isExpired && (
+            <div className="bg-amber-50 rounded-lg p-4 sm:p-5 mb-6 sm:mb-8 border border-amber-200">
+              <p className="text-xs sm:text-sm text-amber-800 mb-2 font-medium">
+                Why did this happen?
+              </p>
+              <p className="text-xs sm:text-sm text-amber-700 text-left">
+                Magic links expire after 1 hour for security. This helps protect your account from unauthorized access.
+              </p>
+            </div>
+          )}
 
-            {/* Message */}
-            <p className="text-slate-600 mb-8 leading-relaxed">
-              {verificationState.message}
-            </p>
-
-            {/* Action Buttons */}
+          {/* Action Buttons */}
+          {!isLoading && (
             <div className="space-y-3">
-              {verificationState.status === 'success' && (
+              {isSuccess && (
                 <>
-                  <PrimaryButton asChild className="w-full">
-                    <Link href="/market">
-                      Browse market
+                  <PrimaryButton asChild className="w-full text-sm sm:text-base">
+                    <Link href="/dashboard">
+                      Go to dashboard
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                   </PrimaryButton>
                   
-                  <GhostButton asChild className="w-full">
-                    <Link href="/">
-                      <Home className="w-4 h-4 mr-2" />
-                      Home
+                  <GhostButton asChild className="w-full text-sm sm:text-base">
+                    <Link href="/market">
+                      Browse market
                     </Link>
                   </GhostButton>
                 </>
               )}
 
-              {verificationState.status === 'expired' && (
+              {isExpired && (
                 <>
-                  <PrimaryButton 
-                    asChild
-                    className="w-full"
-                  >
+                  <PrimaryButton asChild className="w-full text-sm sm:text-base">
                     <Link href="/signin">
+                      <Mail className="w-4 h-4 mr-2" />
                       Request new magic link
-                      <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                   </PrimaryButton>
                   
-                  <GhostButton asChild className="w-full">
+                  <GhostButton asChild className="w-full text-sm sm:text-base">
                     <Link href="/">
                       <Home className="w-4 h-4 mr-2" />
-                      Home
+                      Go home
                     </Link>
                   </GhostButton>
                 </>
@@ -255,45 +287,46 @@ export default function VerifyPage() {
 
               {verificationState.status === 'invalid' && (
                 <>
-                  <PrimaryButton asChild className="w-full">
+                  <PrimaryButton asChild className="w-full text-sm sm:text-base">
                     <Link href="/signin">
                       Try signing in again
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                   </PrimaryButton>
                   
-                  <GhostButton asChild className="w-full">
+                  <GhostButton asChild className="w-full text-sm sm:text-base">
                     <Link href="/">
                       <Home className="w-4 h-4 mr-2" />
-                      Home
+                      Go home
                     </Link>
                   </GhostButton>
                 </>
               )}
-
-              {verificationState.status === 'loading' && (
-                <div className="flex items-center justify-center">
-                  <span className="text-slate-600">Verifying...</span>
-                </div>
-              )}
             </div>
-          </div>
+          )}
 
-          {/* Additional Help */}
-          {verificationState.status !== 'success' && (
-            <div className="mt-6 text-center">
-              <p className="text-sm text-slate-500">
-                Need help?{' '}
-                <a 
-                  href="/contact" 
-                  className="text-primary hover:text-[#7A9A3A] transition-colors font-medium"
-                >
-                  Contact support
-                </a>
-              </p>
+          {isLoading && (
+            <div className="flex items-center justify-center gap-2 text-slate-600">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm sm:text-base">Verifying...</span>
             </div>
           )}
         </div>
+
+        {/* Additional Help */}
+        {!isSuccess && !isLoading && (
+          <div className="mt-6 text-center">
+            <p className="text-xs sm:text-sm text-slate-500">
+              Need help?{' '}
+              <Link 
+                href="/contact" 
+                className="text-nest-mint hover:text-nest-mintHover transition-colors font-medium"
+              >
+                Contact support
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
