@@ -36,15 +36,13 @@ export async function createBuyerRequest(request: Omit<BuyerRequestInsert, 'user
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    throw new Error('User must be authenticated to create a buyer request')
-  }
-
+  // Allow unauthenticated users - user_id will be null
+  // They'll need to verify their email to activate the account
   const { data, error } = await supabase
     .from('buyer_requests')
     .insert({
       ...request,
-      user_id: user.id,
+      user_id: user?.id || null,
     })
     .select()
     .single()

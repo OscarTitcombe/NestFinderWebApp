@@ -199,14 +199,7 @@ export default function IntroPage() {
                   disabled={isSubmitting}
                   className="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                      Sending message...
-                    </div>
-                  ) : (
-                    'Send message to buyer'
-                  )}
+                  Send message to buyer
                 </button>
               </div>
             </form>

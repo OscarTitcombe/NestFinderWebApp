@@ -538,11 +538,7 @@ export default function DashboardPage() {
                                 className="p-2 text-slate-600 hover:text-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
                                 title={request.status === 'active' ? 'Pause' : 'Activate'}
                               >
-                                {actionLoading === request.id ? (
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600"></div>
-                                ) : (
-                                  request.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />
-                                )}
+                                {request.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                               </button>
                               <button 
                                 onClick={() => handleDeleteBuyerRequest(request.id)}
@@ -743,11 +739,7 @@ export default function DashboardPage() {
                                 className="p-2 text-slate-600 hover:text-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
                                 title={property.status === 'active' ? 'Pause' : 'Activate'}
                               >
-                                {actionLoading === property.id ? (
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600"></div>
-                                ) : (
-                                  property.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />
-                                )}
+                                {property.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                               </button>
                               <button 
                                 onClick={() => handleDeleteSellerProperty(property.id)}

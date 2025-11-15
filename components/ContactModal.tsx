@@ -191,14 +191,7 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
                 disabled={isSubmitting || !email.trim() || !message.trim()}
                 className="flex-1 bg-nest-mint hover:bg-nest-mintHover text-white text-sm py-2 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Sending...
-                  </div>
-                ) : (
-                  'Send message'
-                )}
+                Send message
               </button>
             </div>
           </form>

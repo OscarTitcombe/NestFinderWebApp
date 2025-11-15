@@ -41,7 +41,7 @@ export interface Database {
       buyer_requests: {
         Row: {
           id: string
-          user_id: string
+          user_id: string | null
           budget_min: number
           budget_max: number
           beds_min: number
@@ -57,7 +57,7 @@ export interface Database {
         }
         Insert: {
           id?: string
-          user_id: string
+          user_id?: string | null
           budget_min: number
           budget_max: number
           beds_min: number

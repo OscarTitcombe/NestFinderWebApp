@@ -182,8 +182,7 @@ export default function VerifyPage() {
       <div className="min-h-screen bg-nest-sageBg flex items-center justify-center">
         <div className="nf-container">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-nest-mint mx-auto"></div>
-            <p className="mt-4 text-slate-600">Loading...</p>
+            <p className="text-slate-600">Loading...</p>
           </div>
         </div>
       </div>
@@ -274,7 +273,6 @@ export default function VerifyPage() {
 
               {verificationState.status === 'loading' && (
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-nest-mint mr-3"></div>
                   <span className="text-slate-600">Verifying...</span>
                 </div>
               )}

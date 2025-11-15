@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- Buyer Requests table
 CREATE TABLE IF NOT EXISTS public.buyer_requests (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   budget_min INTEGER NOT NULL CHECK (budget_min > 0),
   budget_max INTEGER NOT NULL CHECK (budget_max >= budget_min),
   beds_min INTEGER NOT NULL CHECK (beds_min > 0),

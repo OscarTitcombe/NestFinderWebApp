@@ -1,18 +1,49 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Home, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
 import { signInWithEmail } from '@/lib/supabase/auth'
 
 export default function SignInPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const handleAutoRequest = async (emailToUse: string) => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      await signInWithEmail(emailToUse)
+      setIsSubmitted(true)
+    } catch (err: any) {
+      setError(err.message || 'Failed to send magic link. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Pre-fill email from URL params and auto-request if needed
+  useEffect(() => {
+    const emailParam = searchParams.get('email')
+    const autoRequest = searchParams.get('autoRequest')
+    
+    if (emailParam) {
+      setEmail(emailParam)
+      
+      // Auto-request magic link if requested
+      if (autoRequest === 'true' && emailParam) {
+        handleAutoRequest(emailParam)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -114,17 +145,8 @@ export default function SignInPage() {
                 disabled={isLoading || !email}
                 className="w-full"
               >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Sending...
-                  </div>
-                ) : (
-                  <>
-                    Send magic link
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </>
-                )}
+                Send magic link
+                <ArrowRight className="w-4 h-4 ml-2" />
               </PrimaryButton>
             </form>
           </div>
