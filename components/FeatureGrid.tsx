@@ -1,6 +1,7 @@
 'use client'
 
 import { Home, Share2, Shield, MapPin } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 const features = [
   {
@@ -35,24 +36,40 @@ const features = [
 
 export default function FeatureGrid() {
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <motion.section 
+      className="bg-white py-16 sm:py-20"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <div className="nf-container">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#101314] mb-4">
             How NestFinder works
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             A new way to connect buyers and sellers in the property market
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {features.map((feature, index) => {
             const IconComponent = feature.icon
             return (
-              <div 
+              <motion.div 
                 key={index} 
-                className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition"
+                className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.1 }}
               >
                 <div className="flex items-start space-x-4">
                   {/* Icon pill */}
@@ -69,11 +86,11 @@ export default function FeatureGrid() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }

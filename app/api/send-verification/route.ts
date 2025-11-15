@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Create a verification link using Supabase magic link
     const { createClient } = await import('@/lib/supabase/server')
-    const supabase = createClient()
+    const supabase = await createClient()
     
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const redirectUrl = `${appUrl}/verify`
@@ -26,14 +26,19 @@ export async function POST(request: NextRequest) {
     // We'll use Supabase's signInWithOtp to generate the magic link, then send it via Resend
     
     // First, try to get a magic link from Supabase (this will create/update the OTP)
-    let supabaseMagicLink = null
-    const { data: otpData, error: authError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: redirectUrl,
-        shouldCreateUser: true, // Always create user if they don't exist
-      },
-    })
+    // Note: We call this but don't rely on it - we always send via Resend
+    try {
+      await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: redirectUrl,
+          shouldCreateUser: true, // Always create user if they don't exist
+        },
+      })
+    } catch (authError) {
+      // Ignore Supabase errors - we'll send via Resend anyway
+      console.log('Supabase OTP request completed (may or may not have sent email)')
+    }
 
     // Note: Supabase might not return the magic link directly, but it will send an email
     // However, we'll always send our own email via Resend to ensure delivery

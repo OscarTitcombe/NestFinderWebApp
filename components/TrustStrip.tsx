@@ -1,6 +1,7 @@
 'use client'
 
 import { TrendingUp, Users, Shield } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 const trustItems = [
   {
@@ -22,7 +23,13 @@ const trustItems = [
 
 export default function TrustStrip() {
   return (
-    <section className="bg-nest-sageBg py-10 sm:py-12">
+    <motion.section 
+      className="bg-nest-sageBg py-10 sm:py-12"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <div className="nf-container">
         {/* Label */}
         <div className="text-center mb-4">
@@ -36,9 +43,13 @@ export default function TrustStrip() {
           {trustItems.map((item, index) => {
             const IconComponent = item.icon
             return (
-              <div 
+              <motion.div 
                 key={index} 
                 className="text-center"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.1 }}
               >
                 <div className="flex justify-center mb-3">
                   <IconComponent className="h-5 w-5 text-nest-mint" />
@@ -49,11 +60,11 @@ export default function TrustStrip() {
                 <p className="text-sm text-slate-600">
                   {item.description}
                 </p>
-              </div>
+              </motion.div>
             )
           })}
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
