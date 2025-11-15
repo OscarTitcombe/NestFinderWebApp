@@ -7,13 +7,7 @@ import { motion } from 'framer-motion'
 
 export default function CTASection() {
   return (
-    <motion.section 
-      className="relative py-16 sm:py-20"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-    >
+    <section className="relative py-16 sm:py-20">
       {/* Background Map Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -30,11 +24,11 @@ export default function CTASection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* For Buyers */}
             <motion.div 
-              className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 }}
+              className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: '0px 0px -100px 0px' }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
             >
               <h3 className="font-semibold text-[#101314] mb-2">For Buyers</h3>
               <p className="text-sm text-slate-600 mb-4">
@@ -49,11 +43,11 @@ export default function CTASection() {
 
             {/* For Sellers */}
             <motion.div 
-              className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 }}
+              className="rounded-2xl border border-nest-line bg-white p-6 shadow-sm hover:shadow-md transition"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: '0px 0px -100px 0px' }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
             >
               <h3 className="font-semibold text-[#101314] mb-2">For Sellers</h3>
               <p className="text-sm text-slate-600 mb-4">
@@ -68,6 +62,6 @@ export default function CTASection() {
           </div>
         </div>
       </div>
-    </motion.section>
+    </section>
   )
 }
