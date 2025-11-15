@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import PostcodeSearch from './PostcodeSearch'
 
 type Mode = 'buyer' | 'seller'
@@ -26,8 +27,34 @@ function trackEvent(event: string, data?: Record<string, any>) {
 
 export default function HeroCtaTabs({ onModeChange, initialMode }: HeroCtaTabsProps = {}) {
   const [mode, setMode] = useState<Mode>(initialMode || 'buyer')
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 4, width: 0 })
   const buyerTabRef = useRef<HTMLButtonElement>(null)
   const sellerTabRef = useRef<HTMLButtonElement>(null)
+  const tabContainerRef = useRef<HTMLDivElement>(null)
+
+  // Update indicator position when mode changes
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (!buyerTabRef.current || !sellerTabRef.current || !tabContainerRef.current) return
+      
+      const activeTab = mode === 'buyer' ? buyerTabRef.current : sellerTabRef.current
+      // Get position relative to the container (accounting for container padding)
+      const containerRect = tabContainerRef.current.getBoundingClientRect()
+      const tabRect = activeTab.getBoundingClientRect()
+      const left = tabRect.left - containerRect.left
+      const width = activeTab.offsetWidth
+      
+      setIndicatorStyle({ left, width })
+    }
+    
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(updateIndicator, 0)
+    window.addEventListener('resize', updateIndicator)
+    return () => {
+      clearTimeout(timeoutId)
+      window.removeEventListener('resize', updateIndicator)
+    }
+  }, [mode])
 
   // Initialize mode from URL or localStorage
   useEffect(() => {
@@ -93,9 +120,10 @@ export default function HeroCtaTabs({ onModeChange, initialMode }: HeroCtaTabsPr
     <div className="max-w-xl mx-auto">
       {/* Tabs - separate island hovering above */}
       <div 
+        ref={tabContainerRef}
         role="tablist" 
         aria-label="Choose your role"
-        className="inline-flex rounded-xl p-1 bg-white/70 backdrop-blur border border-nest-line shadow-sm mb-3"
+        className="relative inline-flex rounded-xl p-1 bg-white/70 backdrop-blur border border-nest-line shadow-sm mb-3"
       >
         <button
           ref={buyerTabRef}
@@ -107,10 +135,10 @@ export default function HeroCtaTabs({ onModeChange, initialMode }: HeroCtaTabsPr
           onClick={() => updateMode('buyer')}
           onKeyDown={(e) => handleTabKeyDown(e, 'buyer')}
           className={`
-            px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150
+            relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 z-10
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:ring-offset-2
             ${mode === 'buyer' 
-              ? 'bg-white shadow text-[#101314] font-semibold' 
+              ? 'text-[#101314] font-semibold' 
               : 'text-slate-600 hover:text-[#101314]'
             }
           `}
@@ -127,16 +155,31 @@ export default function HeroCtaTabs({ onModeChange, initialMode }: HeroCtaTabsPr
           onClick={() => updateMode('seller')}
           onKeyDown={(e) => handleTabKeyDown(e, 'seller')}
           className={`
-            px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150
+            relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 z-10
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:ring-offset-2
             ${mode === 'seller' 
-              ? 'bg-white shadow text-[#101314] font-semibold' 
+              ? 'text-[#101314] font-semibold' 
               : 'text-slate-600 hover:text-[#101314]'
             }
           `}
         >
           For Sellers
         </button>
+        
+        {/* Animated background indicator */}
+        <motion.div
+          className="absolute inset-y-1 bg-white shadow rounded-lg"
+          initial={false}
+          animate={{
+            left: `${indicatorStyle.left}px`,
+            width: `${indicatorStyle.width}px`,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 500,
+            damping: 30
+          }}
+        />
       </div>
 
       {/* Content Panel */}
