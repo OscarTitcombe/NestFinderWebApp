@@ -63,28 +63,35 @@ export default function BuyPage() {
     handleSubmit,
     formState: { errors },
     watch,
-    setValue
+    setValue,
+    reset
   } = useForm<BuyerFormData>({
     resolver: zodResolver(buyerFormSchema),
     defaultValues: {
-      budgetMin: 300000,
-      budgetMax: 500000,
-      bedsMin: 2,
-      propertyType: 'flat',
+      budgetMin: undefined,
+      budgetMax: undefined,
+      bedsMin: undefined,
+      propertyType: '',
       areas: '',
       notes: '',
-      accountEmail: user?.email || '',
-      buyerContactEmail: user?.email || ''
+      accountEmail: '',
+      buyerContactEmail: ''
     }
   })
 
-  // Auto-fill emails when user signs in
+  // Reset form to empty when component mounts
   useEffect(() => {
-    if (user?.email) {
-      setValue('accountEmail', user.email)
-      setValue('buyerContactEmail', user.email)
-    }
-  }, [user, setValue])
+    reset({
+      budgetMin: undefined,
+      budgetMax: undefined,
+      bedsMin: undefined,
+      propertyType: '',
+      areas: '',
+      notes: '',
+      accountEmail: '',
+      buyerContactEmail: ''
+    })
+  }, [reset])
 
   const watchedBudgetMin = watch('budgetMin')
   const watchedBudgetMax = watch('budgetMax')
@@ -365,6 +372,7 @@ export default function BuyPage() {
                     className={`input-primary ${errors.bedsMin ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                     aria-describedby={errors.bedsMin ? 'bedsMin-error' : undefined}
                   >
+                    <option value="">Select bedrooms</option>
                     <option value={1}>1 bedroom</option>
                     <option value={2}>2 bedrooms</option>
                     <option value={3}>3 bedrooms</option>
@@ -388,6 +396,7 @@ export default function BuyPage() {
                     className={`input-primary ${errors.propertyType ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                     aria-describedby={errors.propertyType ? 'propertyType-error' : undefined}
                   >
+                    <option value="">Select property type</option>
                     <option value="flat">Flat</option>
                     <option value="house">House</option>
                     <option value="maisonette">Maisonette</option>
