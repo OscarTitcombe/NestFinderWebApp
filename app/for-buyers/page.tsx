@@ -61,7 +61,7 @@ export default function ForBuyersPage() {
         <div className="relative flex items-center min-h-[300px] sm:min-h-[350px]">
           <div className="nf-container relative z-10 w-full py-12 sm:py-16 text-center">
             <div className="max-w-2xl mx-auto">
-              <h1 className="text-3xl sm:text-4xl font-sans font-bold tracking-tight text-slate-900 mb-6">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-6">
                 Find homes before they hit the market
               </h1>
 

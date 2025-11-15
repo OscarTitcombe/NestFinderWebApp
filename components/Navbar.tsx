@@ -48,7 +48,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link 
             href="/" 
-            className="text-[27px] font-sans font-bold text-[#101314] hover:text-nest-mint transition-colors focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg"
+            className="text-[27px] font-bold text-[#101314] hover:text-nest-mint transition-colors focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg"
           >
             NestFinder
           </Link>

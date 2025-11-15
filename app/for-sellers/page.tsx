@@ -75,7 +75,7 @@ export default function ForSellersPage() {
         <div className="relative flex items-center min-h-[300px] sm:min-h-[350px]">
           <div className="nf-container relative z-10 w-full py-12 sm:py-16">
             <div className="text-center max-w-2xl mx-auto">
-              <h1 className="text-3xl sm:text-4xl font-sans font-bold tracking-tight text-slate-900 mb-6">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-6">
                 Find real buyers before you list
               </h1>
 
