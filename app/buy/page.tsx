@@ -52,7 +52,7 @@ type BuyerFormData = z.infer<typeof buyerFormSchema>
 
 export default function BuyPage() {
   const toast = useToast()
-  const { user } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [needsVerification, setNeedsVerification] = useState(false)
@@ -79,7 +79,19 @@ export default function BuyPage() {
     }
   })
 
-  // Reset form to empty when component mounts
+  // Auto-fill account email when user is signed in (after auth loads)
+  useEffect(() => {
+    if (!authLoading) {
+      if (user?.email) {
+        setValue('accountEmail', user.email)
+      } else {
+        // Clear email if user signs out
+        setValue('accountEmail', '')
+      }
+    }
+  }, [user, authLoading, setValue])
+
+  // Reset form to empty when component mounts (only once)
   useEffect(() => {
     reset({
       budgetMin: undefined,
@@ -88,10 +100,11 @@ export default function BuyPage() {
       propertyType: undefined,
       areas: '',
       notes: '',
-      accountEmail: '',
+      accountEmail: '', // Will be filled by the useEffect above when user loads
       buyerContactEmail: ''
     })
-  }, [reset])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
 
   const watchedBudgetMin = watch('budgetMin')
   const watchedBudgetMax = watch('budgetMax')
