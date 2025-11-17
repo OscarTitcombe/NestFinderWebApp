@@ -15,6 +15,7 @@ interface Buyer {
   areas: string[]
   description: string
   postedDate: string
+  email?: string // Buyer's email for notifications
 }
 
 interface ContactModalProps {
@@ -66,6 +67,36 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
         message: message,
         status: 'pending'
       })
+      
+      // Send email notification to buyer (non-blocking)
+      if (buyer.email) {
+        try {
+          await fetch('/api/send-notification', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: buyer.email,
+              buyerRequest: {
+                budget_min: budgetMin,
+                budget_max: budgetMax,
+                beds_min: buyer.minBeds,
+                property_type: buyer.propertyType.toLowerCase(),
+                postcode_districts: buyer.areas,
+              },
+              sellerEmail: email,
+              message: message,
+            }),
+          }).catch((err) => {
+            // Log error but don't fail the contact creation
+            console.error('Failed to send email notification:', err)
+          })
+        } catch (emailError) {
+          // Log error but don't fail the contact creation
+          console.error('Error sending email notification:', emailError)
+        }
+      }
       
       // Reset form and close modal
       setEmail('')

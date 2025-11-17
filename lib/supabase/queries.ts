@@ -36,6 +36,25 @@ export async function createBuyerRequest(request: Omit<BuyerRequestInsert, 'user
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  // If user is authenticated, check active buyer request limit (max 3)
+  if (user) {
+    const { count, error: countError } = await supabase
+      .from('buyer_requests')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+
+    if (countError) {
+      console.error('Error checking active requests:', countError)
+      throw new Error('Failed to check active requests')
+    }
+
+    const activeCount = count || 0
+    if (activeCount >= 3) {
+      throw new Error('You can only have 3 active buyer requests at a time. Please pause or delete an existing request to create a new one.')
+    }
+  }
+
   // Allow unauthenticated users - user_id will be null
   // They'll need to verify their email to activate the account
   const { data, error } = await supabase
@@ -245,6 +264,32 @@ export async function createContact(contact: Omit<ContactInsert, 'seller_id'>) {
     throw new Error('User must be authenticated to create a contact')
   }
 
+  // Check daily contact limit (max 10 per day)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const todayStart = today.toISOString()
+  
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const tomorrowStart = tomorrow.toISOString()
+
+  const { count, error: countError } = await supabase
+    .from('contacts')
+    .select('*', { count: 'exact', head: true })
+    .eq('seller_id', user.id)
+    .gte('created_at', todayStart)
+    .lt('created_at', tomorrowStart)
+
+  if (countError) {
+    console.error('Error checking daily contacts:', countError)
+    throw new Error('Failed to check daily contact limit')
+  }
+
+  const todayCount = count || 0
+  if (todayCount >= 10) {
+    throw new Error('You can only contact up to 10 buyers per day. Please try again tomorrow.')
+  }
+
   // Create the contact
   const { data, error } = await supabase
     .from('contacts')
@@ -259,9 +304,6 @@ export async function createContact(contact: Omit<ContactInsert, 'seller_id'>) {
     console.error('Error creating contact:', error)
     throw error
   }
-
-  // Email notifications disabled - contacts are saved but no emails are sent
-  // To re-enable: uncomment the email sending code below and set up RESEND_API_KEY
 
   return data as Contact
 }

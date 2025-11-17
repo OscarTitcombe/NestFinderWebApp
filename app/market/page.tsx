@@ -24,6 +24,7 @@ interface Buyer {
   areas: string[]
   description: string
   postedDate: string
+  email?: string // Buyer's email for notifications
 }
 
 // Helper function to format relative time
@@ -52,7 +53,8 @@ function convertBuyerRequest(request: BuyerRequest): Buyer {
     propertyType: request.property_type.charAt(0).toUpperCase() + request.property_type.slice(1),
     areas: request.postcode_districts,
     description: request.description,
-    postedDate: formatRelativeTime(request.created_at)
+    postedDate: formatRelativeTime(request.created_at),
+    email: request.email // Include email for notifications
   }
 }
 export default function MarketPage() {

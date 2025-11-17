@@ -1,8 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import DOMPurify from 'isomorphic-dompurify'
+import { rateLimit, getClientIdentifier } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 10 requests per minute per IP
+    const clientId = getClientIdentifier(request)
+    const limitResult = rateLimit(clientId, {
+      windowMs: 60000, // 1 minute
+      maxRequests: 10
+    })
+
+    if (!limitResult.success) {
+      return NextResponse.json(
+        { error: limitResult.message || 'Rate limit exceeded' },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '10',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': limitResult.resetTime.toString(),
+            'Retry-After': Math.ceil((limitResult.resetTime - Date.now()) / 1000).toString()
+          }
+        }
+      )
+    }
     // Initialize Resend only when handling a request (not at build time)
     const apiKey = process.env.RESEND_API_KEY
     if (!apiKey) {
@@ -22,6 +45,16 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Sanitize user input to prevent XSS attacks
+    const sanitizedMessage = DOMPurify.sanitize(message, { 
+      ALLOWED_TAGS: [], // Remove all HTML tags
+      ALLOWED_ATTR: [] 
+    })
+    const sanitizedSellerEmail = DOMPurify.sanitize(sellerEmail, { 
+      ALLOWED_TAGS: [], 
+      ALLOWED_ATTR: [] 
+    })
 
     // Format currency
     const formatCurrency = (amount: number) => {
@@ -64,12 +97,12 @@ export async function POST(request: NextRequest) {
             
             <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 20px 0;">
               <p style="margin: 0 0 12px 0; font-weight: 600; color: #101314;">Message from seller:</p>
-              <p style="margin: 0; color: #4b5563; white-space: pre-wrap;">${message}</p>
+              <p style="margin: 0; color: #4b5563; white-space: pre-wrap;">${sanitizedMessage}</p>
             </div>
             
             <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin: 20px 0;">
               <p style="margin: 0 0 8px 0; font-weight: 600; color: #166534; font-size: 14px;">Seller's email:</p>
-              <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 500;">${sellerEmail}</p>
+              <p style="margin: 0; color: #166534; font-size: 16px; font-weight: 500;">${sanitizedSellerEmail}</p>
             </div>
             
             <div style="margin: 30px 0; text-align: center;">
@@ -80,7 +113,7 @@ export async function POST(request: NextRequest) {
             </div>
             
             <p style="color: #9ca3af; font-size: 14px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-              You can reply directly to the seller at <strong>${sellerEmail}</strong> or view all your messages in your NestFinder inbox.
+              You can reply directly to the seller at <strong>${sanitizedSellerEmail}</strong> or view all your messages in your NestFinder inbox.
             </p>
           </div>
           
@@ -99,13 +132,13 @@ ${formatCurrency(buyerRequest.budget_min)} - ${formatCurrency(buyerRequest.budge
 ${buyerRequest.beds_min} ${buyerRequest.beds_min === 1 ? 'bed' : 'beds'} • ${buyerRequest.property_type} • ${buyerRequest.postcode_districts.join(', ')}
 
 Message from seller:
-${message}
+${sanitizedMessage}
 
-Seller's email: ${sellerEmail}
+Seller's email: ${sanitizedSellerEmail}
 
 View in your inbox: ${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/inbox
 
-You can reply directly to the seller at ${sellerEmail} or view all your messages in your NestFinder inbox.
+You can reply directly to the seller at ${sanitizedSellerEmail} or view all your messages in your NestFinder inbox.
     `
 
     // Send email
