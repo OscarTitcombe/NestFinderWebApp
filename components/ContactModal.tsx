@@ -71,7 +71,7 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
       // Send email notification to buyer (non-blocking)
       if (buyer.email) {
         try {
-          await fetch('/api/send-notification', {
+          const emailResponse = await fetch('/api/send-notification', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -88,14 +88,24 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
               sellerEmail: email,
               message: message,
             }),
-          }).catch((err) => {
-            // Log error but don't fail the contact creation
-            console.error('Failed to send email notification:', err)
           })
+
+          if (!emailResponse.ok) {
+            const errorData = await emailResponse.json().catch(() => ({}))
+            console.error('Email notification failed:', {
+              status: emailResponse.status,
+              statusText: emailResponse.statusText,
+              error: errorData
+            })
+          } else {
+            console.log('Email notification sent successfully')
+          }
         } catch (emailError) {
           // Log error but don't fail the contact creation
           console.error('Error sending email notification:', emailError)
         }
+      } else {
+        console.warn('Buyer email not available, skipping email notification')
       }
       
       // Reset form and close modal
