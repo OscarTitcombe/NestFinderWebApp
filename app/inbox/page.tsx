@@ -10,6 +10,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useToast } from '@/lib/toast'
 import { InboxSkeleton, PageHeaderSkeleton } from '@/components/Skeletons'
+import { analytics } from '@/lib/analytics'
 
 interface BuyerContact {
   id: string
@@ -97,6 +98,10 @@ export default function InboxPage() {
     setMarkingAsRead(contactId)
     try {
       await markContactAsRead(contactId)
+      
+      // Track message read
+      analytics.messageRead(contactId)
+      
       // Update local state
       setContacts(prev => prev.map(c => 
         c.id === contactId ? { ...c, status: 'read' as const } : c

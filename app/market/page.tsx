@@ -10,6 +10,7 @@ import ContactModal from '@/components/ContactModal'
 import { getBuyerRequests } from '@/lib/supabase/queries'
 import type { Database } from '@/lib/types/database'
 import { MarketGridSkeleton } from '@/components/Skeletons'
+import { analytics } from '@/lib/analytics'
 
 type BuyerRequest = Database['public']['Tables']['buyer_requests']['Row']
 
@@ -88,6 +89,9 @@ export default function MarketPage() {
         const convertedBuyers = requests.map(convertBuyerRequest)
         setBuyers(convertedBuyers)
         setFilteredBuyers(convertedBuyers)
+        
+        // Track market page viewed
+        analytics.marketPageViewed(normalizedPostcode, convertedBuyers.length)
       } catch (err: any) {
         console.error('Error fetching buyers:', err)
         setError('Failed to load buyer requests. Please try again.')

@@ -15,6 +15,7 @@ import Footer from '@/components/Footer'
 import ConfirmDialog from '@/components/ConfirmDialog'
 import { useToast } from '@/lib/toast'
 import { DashboardListSkeleton, PageHeaderSkeleton } from '@/components/Skeletons'
+import { analytics } from '@/lib/analytics'
 
 interface ConfirmDialogState {
   isOpen: boolean
@@ -92,6 +93,14 @@ export default function DashboardPage() {
       const newStatus = currentStatus === 'active' ? 'paused' : 'active'
       await updateBuyerRequest(id, { status: newStatus as any })
       await loadData()
+      
+      // Track action
+      if (newStatus === 'active') {
+        analytics.buyerRequestActivated(id)
+      } else {
+        analytics.buyerRequestPaused(id)
+      }
+      
       toast.showToast(
         newStatus === 'active' ? 'Buyer request activated' : 'Buyer request paused',
         'success'
@@ -114,6 +123,10 @@ export default function DashboardPage() {
         setActionLoading(id)
         try {
           await deleteBuyerRequest(id)
+          
+          // Track deletion
+          analytics.buyerRequestDeleted(id)
+          
           await loadData()
           toast.showToast('Buyer request deleted', 'success')
         } catch (error: any) {
@@ -188,6 +201,10 @@ export default function DashboardPage() {
       })
       
       await loadData()
+      
+      // Track edit
+      analytics.buyerRequestEdited(id)
+      
       setEditingBuyerRequest(null)
       setEditFormData(null)
       toast.showToast('Buyer request updated successfully', 'success')

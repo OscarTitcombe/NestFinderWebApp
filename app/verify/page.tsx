@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { CheckCircle, AlertTriangle, XCircle, ArrowRight, Home, Mail, Sparkles, Loader2, Clock } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
 import { verifyOtp } from '@/lib/supabase/auth'
+import { analytics } from '@/lib/analytics'
 
 type VerificationStatus = 'success' | 'expired' | 'invalid' | 'loading'
 
@@ -89,6 +90,9 @@ export default function VerifyPage() {
       
       if (session && !sessionError) {
         // Session exists, verification successful
+        // Track signup/signin
+        analytics.signin()
+        
         setVerificationState({
           status: 'success',
           title: 'Email verified — you\'re signed in!',
@@ -110,6 +114,9 @@ export default function VerifyPage() {
       if (token && email) {
         try {
           await verifyOtp(email, token)
+          // Track signup/signin
+          analytics.signin()
+          
           setVerificationState({
             status: 'success',
             title: 'You\'re signed in!',
@@ -145,6 +152,9 @@ export default function VerifyPage() {
       setTimeout(async () => {
         const { data: { session: retrySession } } = await supabase.auth.getSession()
         if (retrySession) {
+          // Track signup/signin
+          analytics.signin()
+          
           setVerificationState({
             status: 'success',
             title: 'You\'re signed in!',

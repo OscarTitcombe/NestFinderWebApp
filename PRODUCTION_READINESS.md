@@ -23,14 +23,16 @@ This document outlines what needs to be completed before NestFinder is ready for
   - Ensure `.env.local` is in `.gitignore` (already done)
 
 ### 3. **Email Service Configuration**
-- **Status**: ⚠️ Needs verification
+- **Status**: ✅ **CODE COMPLETE** - ⚠️ Needs testing/verification
 - **Issue**: Email notifications require Resend API key setup
 - **Note**: You mentioned you've added the API key to both `.env.local` and Vercel
 - **Fix Required**:
-  - ✅ Verify emails are actually sending in production
-  - ✅ Check Vercel function logs if emails don't work
-  - ✅ Ensure `RESEND_FROM_EMAIL` and `NEXT_PUBLIC_APP_URL` are set in Vercel
-  - ✅ Test the contact flow (seller → buyer email notification)
+  - ✅ Code implemented with error logging
+  - ⚠️ **TODO**: Verify emails are actually sending in production
+  - ⚠️ **TODO**: Check Vercel function logs if emails don't work
+  - ⚠️ **TODO**: Ensure `RESEND_FROM_EMAIL` and `NEXT_PUBLIC_APP_URL` are set in Vercel
+  - ⚠️ **TODO**: Test the contact flow (seller → buyer email notification)
+  - **See**: `EMAIL_TROUBLESHOOTING.md` for debugging guide
 
 ### 4. **Dashboard Missing Seller Properties** (NOT AN ISSUE)
 - **Status**: ✅ Not needed
@@ -38,35 +40,27 @@ This document outlines what needs to be completed before NestFinder is ready for
 - **Action**: Remove from critical list - this is working as intended
 
 ### 5. **Security Headers** (See SECURITY_EXPLAINED.md for details)
-- **Status**: ❌ Not configured
+- **Status**: ✅ **COMPLETED**
 - **Issue**: No security headers configured in `next.config.js`
 - **What it is**: Rules that tell browsers how to protect your site (like a bouncer)
 - **Why it matters**: Prevents attacks like clickjacking, XSS, and data theft
-- **Fix Required**:
-  - Add headers to `next.config.js` (takes 5 minutes)
-  - See `SECURITY_EXPLAINED.md` for simple explanation and code example
+- **Fix Required**: ✅ **DONE** - Added to `next.config.js`
 
 ### 6. **Rate Limiting** (See SECURITY_EXPLAINED.md for details)
-- **Status**: ❌ Not implemented
+- **Status**: ✅ **COMPLETED**
 - **Issue**: No protection against abuse/spam
 - **What it is**: Limits how many requests someone can make (like a speed limit)
 - **Why it matters**: Prevents spam, reduces costs, keeps site fast
-- **Fix Required**:
-  - Add rate limiting to API routes (takes ~30 minutes)
-  - Use middleware or service like Upstash Redis (free tier available)
-  - Limit: form submissions, email sends, API calls
-  - See `SECURITY_EXPLAINED.md` for simple explanation
+- **Fix Required**: ✅ **DONE** - Added to `/api/send-notification` (10 requests/minute per IP)
+- **Note**: Also added user limits (3 active buyer requests, 10 contacts/day)
 
 ### 7. **Input Sanitization** (See SECURITY_EXPLAINED.md for details)
-- **Status**: ⚠️ Mostly safe (React protects you), but emails need it
+- **Status**: ✅ **COMPLETED**
 - **Issue**: Email content not sanitized for XSS attacks
 - **What it is**: Cleaning user input to remove dangerous code (like washing hands)
 - **Why it matters**: Prevents malicious scripts from running in emails
-- **Fix Required**:
-  - Sanitize message content in emails (takes ~10 minutes)
-  - Use library like `DOMPurify` for email HTML content
-  - Note: React components are already safe (React auto-escapes)
-  - See `SECURITY_EXPLAINED.md` for simple explanation
+- **Fix Required**: ✅ **DONE** - Added DOMPurify sanitization to email content in `/api/send-notification`
+- **Note**: React components are already safe (React auto-escapes)
 
 ## 🔧 High Priority (Should Fix Before Launch)
 

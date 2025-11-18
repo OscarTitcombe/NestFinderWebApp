@@ -9,6 +9,7 @@ import { ArrowLeft, CheckCircle } from 'lucide-react'
 import { normalizePostcode } from '@/lib/postcode'
 import { useToast } from '@/lib/toast'
 import { useAuth } from '@/lib/auth-context'
+import { analytics } from '@/lib/analytics'
 
 // Zod validation schema
 const buyerFormSchema = z.object({
@@ -139,6 +140,16 @@ export default function BuyPage() {
         description: data.notes,
         email: data.buyerContactEmail,
         status: 'active'
+      })
+
+      // Track buyer request posted
+      analytics.buyerRequestPosted({
+        budget_min: data.budgetMin,
+        budget_max: data.budgetMax,
+        beds_min: data.bedsMin,
+        beds_max: data.bedsMin,
+        property_type: data.propertyType,
+        postcode_districts: districts
       })
 
       // If user is not authenticated, send verification email

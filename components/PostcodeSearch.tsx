@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { normalizePostcode } from '@/lib/postcode'
 import { PrimaryButton } from './Buttons'
+import { analytics } from '@/lib/analytics'
 
 interface PostcodeSearchProps {
   buttonLabel?: string
@@ -51,6 +52,9 @@ export default function PostcodeSearch({
         setIsLoading(false)
         return
       }
+
+      // Track postcode search
+      analytics.postcodeSearched(postcode, result.district || undefined)
 
       // Navigate to quiz page with normalized postcode
       router.push(`/quiz?postcode=${encodeURIComponent(result.district!)}`)

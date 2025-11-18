@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X, Mail, Home, Calendar } from 'lucide-react'
 import { useToast } from '@/lib/toast'
+import { analytics } from '@/lib/analytics'
 
 interface Buyer {
   id: string
@@ -66,6 +67,13 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
         seller_email: email,
         message: message,
         status: 'pending'
+      })
+
+      // Track seller contacted buyer
+      analytics.sellerContacted({
+        buyer_request_id: buyer.id,
+        budget_min: budgetMin,
+        budget_max: budgetMax
       })
       
       // Send email notification to buyer (non-blocking)
