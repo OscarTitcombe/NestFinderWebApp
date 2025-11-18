@@ -45,7 +45,7 @@ export default function Hero() {
         <div className="text-center max-w-2xl mx-auto">
           {/* Main Headline */}
           <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-[#101314]">
-            Nest Finder
+            NestFinder
           </h1>
           
           {/* Subheading */}
