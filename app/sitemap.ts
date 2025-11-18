@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nestfinder.co.uk'
+  // Remove trailing slash if present to avoid double slashes
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://nestfinder.co.uk').replace(/\/$/, '')
   
   return [
     {
