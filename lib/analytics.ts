@@ -1,25 +1,26 @@
 /**
  * Analytics tracking helper
- * Supports Vercel Analytics and can be extended with other providers
+ * Uses Vercel Analytics for event tracking
  */
 
 /**
- * Track a custom event
+ * Track a custom event using Vercel Analytics
  * Note: Custom events require Vercel Pro/Enterprise plan
- * For free tier, events are logged to console in development
+ * Events will still log in development for testing
  */
 export function trackEvent(eventName: string, properties?: Record<string, any>) {
   if (typeof window === 'undefined') return
 
-  // Vercel Analytics (requires Pro/Enterprise for custom events)
-  // For now, we'll use it and it will work if you upgrade
+  // Vercel Analytics - track custom events
+  // This requires Vercel Pro/Enterprise plan for custom events
+  // But will work in development and when you upgrade
   try {
-    // Dynamic import to avoid SSR issues
+    // Use dynamic import to avoid SSR issues
     import('@vercel/analytics').then(({ track }) => {
       track(eventName, properties)
     }).catch(() => {
-      // Vercel Analytics not available or custom events not enabled
-      // This is fine - page views still work on free tier
+      // Vercel Analytics not available - this is fine
+      // Custom events require Pro plan, but code is ready
     })
   } catch {
     // Ignore errors

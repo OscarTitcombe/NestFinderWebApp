@@ -76,7 +76,7 @@ export default function ForSellersPage() {
           <div className="nf-container relative z-10 w-full py-12 sm:py-16">
             <div className="text-center max-w-2xl mx-auto">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-6">
-                Find real buyers before you list
+                Browse Buyer Interest in Your Area
               </h1>
 
               {/* Postcode Search with depth */}

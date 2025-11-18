@@ -8,14 +8,14 @@ const features = [
     icon: Home,
     title: 'For Sellers',
     bullets: [
-      'See who\'s already looking for a home like yours — before you list'
+      'Browse buyer interest in your area — see who\'s already looking for a home like yours before you list'
     ]
   },
   {
     icon: Share2,
     title: 'For Buyers',
     bullets: [
-      'Tell us what you\'re searching for and get matched with sellers exploring interest'
+      'Upload your property brief and let homeowners come to you. Tell us what you\'re searching for and get matched with sellers exploring interest'
     ]
   },
   {
@@ -43,7 +43,7 @@ export default function FeatureGrid() {
             How NestFinder works
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            A new way to connect buyers and sellers in the property market
+            Browse buyer interest in your area or upload your property brief. Connect buyers and sellers before properties are listed.
           </p>
         </div>
 

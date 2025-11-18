@@ -62,7 +62,7 @@ export default function ForBuyersPage() {
           <div className="nf-container relative z-10 w-full py-12 sm:py-16 text-center">
             <div className="max-w-2xl mx-auto">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-6">
-                Find homes before they hit the market
+                Upload Your Property Brief — Let Homeowners Come to You
               </h1>
 
               {/* Postcode Search with depth */}

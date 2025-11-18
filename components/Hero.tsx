@@ -51,8 +51,8 @@ export default function Hero() {
           {/* Subheading */}
           <p className="mt-3 text-lg sm:text-xl text-[#2B3135]">
             {mode === 'buyer' 
-              ? "A better way to share what you're searching for."
-              : "Browse and connect with prospective buyers in your area."
+              ? "Upload your property brief and let homeowners come to you."
+              : "Browse buyer interest in your area before going to market."
             }
           </p>
 
