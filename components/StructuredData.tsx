@@ -1,5 +1,5 @@
 export default function StructuredData() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nestfinder.co.uk'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.nestfinder.co.uk'
   
   const organizationSchema = {
     '@context': 'https://schema.org',

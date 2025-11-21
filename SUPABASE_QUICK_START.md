@@ -96,3 +96,4 @@ Visit `http://localhost:3000/signin` and try signing in!
 See `SUPABASE_SETUP.md` for detailed documentation.
 
 
+

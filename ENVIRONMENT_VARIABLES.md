@@ -9,7 +9,7 @@ Environment variables are configuration values stored outside your code. They're
 
 ## NEXT_PUBLIC_SITE_URL Explained
 
-`NEXT_PUBLIC_SITE_URL` is the full URL of your website (e.g., `https://nestfinder.co.uk`).
+`NEXT_PUBLIC_SITE_URL` is the full URL of your website (e.g., `https://www.nestfinder.co.uk`).
 
 ### Why It's Needed
 
@@ -22,7 +22,7 @@ This variable is used in several places for SEO:
 
 ### Current Status
 
-Your code already has a **fallback value** (`https://nestfinder.co.uk`), so it will work even without setting the variable. However, setting it explicitly is better because:
+Your code already has a **fallback value** (`https://www.nestfinder.co.uk`), so it will work even without setting the variable. However, setting it explicitly is better because:
 
 - ✅ You can easily change it for different environments (dev/staging/production)
 - ✅ It's clearer what your actual domain is
@@ -92,9 +92,9 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 ### Production:
 ```
-NEXT_PUBLIC_SITE_URL=https://nestfinder.co.uk
+NEXT_PUBLIC_SITE_URL=https://www.nestfinder.co.uk
 ```
-(Replace with your actual domain)
+(Use www. version to match your Vercel redirects)
 
 ---
 
