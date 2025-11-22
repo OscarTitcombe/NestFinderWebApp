@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { MapPin, Home } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -24,6 +24,8 @@ interface BuyerCardProps {
 
 export default function BuyerCard({ buyer, onContact }: BuyerCardProps) {
   const [expanded, setExpanded] = useState(false)
+  const [showMoreButton, setShowMoreButton] = useState(false)
+  const notesRef = useRef<HTMLParagraphElement>(null)
 
   // Format money helper - returns number with abbreviations (K, M, B)
   const fmt = (amount: number) => {
@@ -45,6 +47,27 @@ export default function BuyerCard({ buyer, onContact }: BuyerCardProps) {
   const bedsMin = buyer.minBeds
   const bedsMax = buyer.maxBeds
   const notes = buyer.description
+
+  // Check if content exceeds 2 lines
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM has updated
+    const checkOverflow = () => {
+      if (notesRef.current && !expanded && notes) {
+        const element = notesRef.current
+        // Check if scrollHeight is greater than clientHeight (meaning content is truncated)
+        setShowMoreButton(element.scrollHeight > element.clientHeight)
+      } else {
+        setShowMoreButton(false)
+      }
+    }
+    
+    // Check after a small delay to ensure line-clamp is applied
+    const timeoutId = setTimeout(() => {
+      requestAnimationFrame(checkOverflow)
+    }, 0)
+    
+    return () => clearTimeout(timeoutId)
+  }, [notes, expanded])
 
   return (
     <div className="rounded-2xl border border-nest-line bg-white shadow-sm hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 transition p-5 sm:p-6 relative">
@@ -83,22 +106,25 @@ export default function BuyerCard({ buyer, onContact }: BuyerCardProps) {
       </div>
 
       {/* Notes - 2-line clamp + expand */}
-      <p
-        className={clsx(
-          'mt-4 text-slate-700 text-sm sm:text-base',
-          expanded ? '' : 'line-clamp-2'
-        )}
-      >
-        {notes}
-      </p>
-      {notes && notes.length > 90 && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="mt-1 text-nest-sea text-sm hover:underline"
+      <div className="mt-4 md:min-h-[3rem]">
+        <p
+          ref={notesRef}
+          className={clsx(
+            'text-slate-700 text-sm sm:text-base leading-relaxed',
+            expanded ? '' : 'line-clamp-2'
+          )}
         >
-          {expanded ? 'Show less' : 'Show more'}
-        </button>
-      )}
+          {notes}
+        </p>
+        {notes && showMoreButton && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-1 text-nest-sea text-sm hover:underline"
+          >
+            {expanded ? 'Show less' : 'Show more'}
+          </button>
+        )}
+      </div>
 
       {/* CTA footer - inside card, sticky feel */}
       <div className="mt-5">
