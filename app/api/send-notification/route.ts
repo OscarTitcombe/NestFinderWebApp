@@ -29,8 +29,9 @@ export async function POST(request: NextRequest) {
     // Initialize Resend only when handling a request (not at build time)
     const apiKey = process.env.RESEND_API_KEY
     if (!apiKey) {
+      console.error('❌ RESEND_API_KEY is not configured in environment variables')
       return NextResponse.json(
-        { error: 'RESEND_API_KEY is not configured' },
+        { error: 'RESEND_API_KEY is not configured', message: 'Please set RESEND_API_KEY in your environment variables' },
         { status: 500 }
       )
     }
@@ -151,12 +152,20 @@ You can reply directly to the seller at ${sanitizedSellerEmail} or view all your
     })
 
     if (error) {
-      console.error('Resend error:', error)
+      console.error('❌ Resend API error:', error)
+      console.error('Email details:', {
+        from: process.env.RESEND_FROM_EMAIL || 'NestFinder <onboarding@resend.dev>',
+        to: to,
+        hasApiKey: !!apiKey,
+        apiKeyPrefix: apiKey?.substring(0, 5) + '...'
+      })
       return NextResponse.json(
-        { error: 'Failed to send email', details: error },
+        { error: 'Failed to send email', details: error, message: 'Check Resend API key and configuration' },
         { status: 500 }
       )
     }
+    
+    console.log('✅ Email sent successfully:', { messageId: data?.id, to })
 
     return NextResponse.json({ success: true, messageId: data?.id })
   } catch (error: any) {

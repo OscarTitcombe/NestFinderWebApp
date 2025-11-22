@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
+import * as Sentry from '@sentry/nextjs'
 import './globals.css'
 import { ToastProvider } from '@/lib/toast'
 import { AuthProvider } from '@/lib/auth-context'
 import { Analytics } from '@vercel/analytics/react'
 import StructuredData from '@/components/StructuredData'
 
-export const metadata: Metadata = {
+export function generateMetadata(): Metadata {
+  return {
   title: {
     default: 'NestFinder — Browse Buyer Interest & Upload Your Property Brief',
     template: '%s | NestFinder'
@@ -78,6 +80,10 @@ export const metadata: Metadata = {
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
     ]
+  },
+    other: {
+      ...Sentry.getTraceData()
+    }
   }
 }
 

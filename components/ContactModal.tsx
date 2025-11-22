@@ -100,20 +100,25 @@ export default function ContactModal({ buyer, onClose }: ContactModalProps) {
 
           if (!emailResponse.ok) {
             const errorData = await emailResponse.json().catch(() => ({}))
-            console.error('Email notification failed:', {
+            console.error('❌ Email notification failed:', {
               status: emailResponse.status,
               statusText: emailResponse.statusText,
               error: errorData
             })
+            // Show user-friendly error
+            toast.showToast('Contact saved, but email notification failed. Check console for details.', 'error')
           } else {
-            console.log('Email notification sent successfully')
+            const responseData = await emailResponse.json().catch(() => ({}))
+            console.log('✅ Email notification sent successfully:', responseData)
           }
         } catch (emailError) {
           // Log error but don't fail the contact creation
-          console.error('Error sending email notification:', emailError)
+          console.error('❌ Error sending email notification:', emailError)
+          toast.showToast('Contact saved, but email notification failed. Check console for details.', 'error')
         }
       } else {
-        console.warn('Buyer email not available, skipping email notification')
+        console.warn('⚠️ Buyer email not available, skipping email notification')
+        console.warn('Buyer object:', buyer)
       }
       
       // Reset form and close modal
