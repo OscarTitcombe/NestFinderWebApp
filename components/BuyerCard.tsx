@@ -25,12 +25,19 @@ interface BuyerCardProps {
 export default function BuyerCard({ buyer, onContact }: BuyerCardProps) {
   const [expanded, setExpanded] = useState(false)
 
-  // Format money helper - returns number with commas, no currency symbol
+  // Format money helper - returns number with abbreviations (K, M, B)
   const fmt = (amount: number) => {
-    return new Intl.NumberFormat('en-GB', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount)
+    if (amount >= 1000000000) {
+      const billions = amount / 1000000000
+      return billions % 1 === 0 ? `${billions}B` : `${billions.toFixed(1)}B`
+    } else if (amount >= 1000000) {
+      const millions = amount / 1000000
+      return millions % 1 === 0 ? `${millions}M` : `${millions.toFixed(1)}M`
+    } else if (amount >= 1000) {
+      const thousands = amount / 1000
+      return thousands % 1 === 0 ? `${thousands}K` : `${thousands.toFixed(1)}K`
+    }
+    return amount.toString()
   }
 
   const budgetMin = buyer.budgetMin ?? buyer.budget
