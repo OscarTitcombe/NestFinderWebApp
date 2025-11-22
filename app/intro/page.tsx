@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle, Mail } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Mail, Loader2 } from 'lucide-react'
 
 // Zod validation schema
 const introFormSchema = z.object({
@@ -21,7 +21,7 @@ const introFormSchema = z.object({
 
 type IntroFormData = z.infer<typeof introFormSchema>
 
-export default function IntroPage() {
+function IntroPageContent() {
   const searchParams = useSearchParams()
   const [buyerWantId, setBuyerWantId] = useState<string | null>(null)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -218,6 +218,23 @@ export default function IntroPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function IntroPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-light flex items-center justify-center">
+        <div className="container-custom">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-3" />
+            <p className="text-slate-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <IntroPageContent />
+    </Suspense>
   )
 }
 

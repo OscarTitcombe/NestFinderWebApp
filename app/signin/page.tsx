@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Home, ArrowRight, CheckCircle, AlertCircle, Loader2, Sparkles, Copy, RefreshCw } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
 import { signInWithEmail } from '@/lib/supabase/auth'
 
-export default function SignInPage() {
+function SignInPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
@@ -285,6 +285,23 @@ export default function SignInPage() {
           </div>
         </div>
       </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full py-6 sm:py-8 lg:py-12">
+        <div className="max-w-2xl mx-auto px-3 sm:px-4 lg:px-8 w-full">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 text-nest-mint animate-spin mx-auto mb-3" />
+            <p className="text-slate-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignInPageContent />
+    </Suspense>
   )
 }
 

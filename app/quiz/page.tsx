@@ -1,12 +1,13 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { normalizePostcode } from '@/lib/postcode'
 import PropertyQuiz from '@/components/PropertyQuiz'
 import CalculatingScreen from '@/components/CalculatingScreen'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { Loader2 } from 'lucide-react'
 
 interface QuizAnswers {
   propertyType: string
@@ -16,7 +17,7 @@ interface QuizAnswers {
   features: string[]
 }
 
-export default function QuizPage() {
+function QuizPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [postcode, setPostcode] = useState<string | null>(null)
@@ -143,5 +144,24 @@ export default function QuizPage() {
       </div>
       <Footer />
     </div>
+  )
+}
+
+export default function QuizPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 text-nest-mint animate-spin mx-auto mb-3" />
+            <p className="text-slate-600">Loading...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    }>
+      <QuizPageContent />
+    </Suspense>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import { CheckCircle, AlertTriangle, XCircle, ArrowRight, Home, Mail, Sparkles, Loader2, Clock } from 'lucide-react'
 import { PrimaryButton, GhostButton } from '@/components/Buttons'
@@ -21,7 +21,7 @@ interface VerificationState {
   buttonHoverColor: string
 }
 
-export default function VerifyPage() {
+function VerifyPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [verificationState, setVerificationState] = useState<VerificationState | null>(null)
@@ -339,6 +339,21 @@ export default function VerifyPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-nest-mint animate-spin mx-auto mb-3" />
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <VerifyPageContent />
+    </Suspense>
   )
 }
 

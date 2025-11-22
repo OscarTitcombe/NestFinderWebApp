@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { normalizePostcode } from '@/lib/postcode'
 import PostcodeSearch from '@/components/PostcodeSearch'
 import FilterBar from '@/components/FilterBar'
@@ -58,7 +58,8 @@ function convertBuyerRequest(request: BuyerRequest): Buyer {
     email: request.email // Include email for notifications
   }
 }
-export default function MarketPage() {
+
+function MarketPageContent() {
   const searchParams = useSearchParams()
   const [postcode, setPostcode] = useState<string | null>(null)
   const [normalizedPostcode, setNormalizedPostcode] = useState<string | null>(null)
@@ -290,5 +291,19 @@ export default function MarketPage() {
         />
       )}
     </div>
+  )
+}
+
+export default function MarketPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-light">
+        <div className="container-custom py-8">
+          <MarketGridSkeleton count={6} />
+        </div>
+      </div>
+    }>
+      <MarketPageContent />
+    </Suspense>
   )
 }
