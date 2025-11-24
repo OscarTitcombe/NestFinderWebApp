@@ -66,6 +66,7 @@ export default function FilterBar({ onFilterChange, initialValues }: FilterBarPr
       beds,
       propertyType
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minBudget, maxBudget, beds, propertyType])
 
   const formatCurrency = (amount: number) => {

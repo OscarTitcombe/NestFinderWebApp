@@ -123,3 +123,5 @@ Even though the code has fallbacks, it's better to set these explicitly.
 **Optional (1)**:
 - `SUPABASE_SERVICE_ROLE_KEY`
 
+
+

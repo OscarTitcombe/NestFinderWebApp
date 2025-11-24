@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { signOut } from '@/lib/supabase/auth'
@@ -48,9 +49,23 @@ export default function Navbar() {
           {/* Logo */}
           <Link 
             href="/" 
-            className="text-[27px] font-bold text-[#101314] hover:text-nest-mint transition-colors focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg"
+            className="flex items-center text-[27px] font-bold text-[#689674] focus-visible:ring-2 focus-visible:ring-nest-sea focus-visible:outline-none rounded-lg"
           >
-            NestFinder
+            <span>NestFinder</span>
+            <div 
+              className="-ml-3 w-[60px] h-[60px]"
+              style={{ 
+                backgroundColor: '#689674',
+                maskImage: 'url(/nestfinderlogo4.png)',
+                maskSize: 'contain',
+                maskRepeat: 'no-repeat',
+                maskPosition: 'center',
+                WebkitMaskImage: 'url(/nestfinderlogo4.png)',
+                WebkitMaskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center'
+              }}
+            />
           </Link>
 
           {/* Navigation Links */}

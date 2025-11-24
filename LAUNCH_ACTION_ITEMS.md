@@ -259,3 +259,5 @@ If email notifications still don't work after checking everything:
 3. Share what you see in Resend dashboard
 4. Verify the API route is being called (Network tab in DevTools)
 
+
+
