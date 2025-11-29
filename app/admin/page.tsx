@@ -85,28 +85,54 @@ export default function AdminDashboard() {
     try {
       setIsLoading(true)
       
-      // Check admin access by trying to fetch stats
-      const statsRes = await fetch('/api/admin/stats')
+      const [statsRes, buyerRes, contactsRes, usersRes] = await Promise.all([
+        fetch('/api/admin/stats'),
+        fetch('/api/admin/buyer-requests'),
+        fetch('/api/admin/contacts'),
+        fetch('/api/admin/users')
+      ])
+
+      // Check each response for errors
       if (!statsRes.ok) {
+        const errorData = await statsRes.json()
         if (statsRes.status === 401) {
           toast.showToast('Unauthorized: Admin access required', 'error')
           router.push('/dashboard')
           return
         }
-        throw new Error('Failed to load admin data')
+        throw new Error(errorData.error || 'Failed to load stats')
+      }
+      if (!buyerRes.ok) {
+        const errorData = await buyerRes.json()
+        throw new Error(errorData.error || 'Failed to load buyer requests')
+      }
+      if (!contactsRes.ok) {
+        const errorData = await contactsRes.json()
+        throw new Error(errorData.error || 'Failed to load contacts')
+      }
+      if (!usersRes.ok) {
+        const errorData = await usersRes.json()
+        throw new Error(errorData.error || 'Failed to load users')
       }
 
       const [statsData, buyerData, contactsData, usersData] = await Promise.all([
-        fetch('/api/admin/stats').then(r => r.json()),
-        fetch('/api/admin/buyer-requests').then(r => r.json()),
-        fetch('/api/admin/contacts').then(r => r.json()),
-        fetch('/api/admin/users').then(r => r.json())
+        statsRes.json(),
+        buyerRes.json(),
+        contactsRes.json(),
+        usersRes.json()
       ])
 
-      setStats(statsData)
-      setBuyerRequests(buyerData)
-      setContacts(contactsData)
-      setUsers(usersData)
+      // Check if any response contains an error
+      if (statsData?.error) throw new Error(statsData.error)
+      if (buyerData?.error) throw new Error(buyerData.error)
+      if (contactsData?.error) throw new Error(contactsData.error)
+      if (usersData?.error) throw new Error(usersData.error)
+
+      // Ensure arrays are set (even if empty) and handle null/undefined
+      setStats(statsData || null)
+      setBuyerRequests(Array.isArray(buyerData) ? buyerData : [])
+      setContacts(Array.isArray(contactsData) ? contactsData : [])
+      setUsers(Array.isArray(usersData) ? usersData : [])
     } catch (error: any) {
       console.error('Error loading admin data:', error)
       toast.showToast(error.message || 'Failed to load admin data', 'error')
@@ -314,7 +340,7 @@ export default function AdminDashboard() {
                       <option value="expired">Expired</option>
                     </select>
                   </div>
-                  {buyerRequests.length === 0 ? (
+                  {!buyerRequests || buyerRequests.length === 0 ? (
                     <div className="text-center py-12">
                       <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                       <p className="text-slate-600">No buyer requests found</p>
@@ -323,16 +349,19 @@ export default function AdminDashboard() {
                     <div className="space-y-3 max-h-[600px] overflow-y-auto">
                       {buyerRequests
                         .filter(br => {
+                          if (!br) return false
                           const matchesSearch = !searchQuery || 
-                            br.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (br.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                             (br.profiles?.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            br.postcode_districts.some(pc => pc.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                            br.description.toLowerCase().includes(searchQuery.toLowerCase())
+                            (Array.isArray(br.postcode_districts) && br.postcode_districts.some(pc => pc.toLowerCase().includes(searchQuery.toLowerCase()))) ||
+                            (br.description || '').toLowerCase().includes(searchQuery.toLowerCase())
                           const matchesStatus = buyerStatusFilter === 'all' || br.status === buyerStatusFilter
                           return matchesSearch && matchesStatus
                         })
-                        .map(request => (
-                        <div key={request.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        .map(request => {
+                          if (!request) return null
+                          return (
+                            <div key={request.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
@@ -348,7 +377,7 @@ export default function AdminDashboard() {
                                 </span>
                               </div>
                               <p className="text-sm text-slate-600 mb-1">
-                                {request.beds_min} beds • {request.property_type} • {request.postcode_districts.join(', ')}
+                                {request.beds_min} beds • {request.property_type} • {Array.isArray(request.postcode_districts) ? request.postcode_districts.join(', ') : ''}
                               </p>
                               <p className="text-xs text-slate-500">
                                 {request.profiles?.email || request.email} • {formatDate(request.created_at)}
@@ -380,7 +409,9 @@ export default function AdminDashboard() {
                             )}
                           </div>
                         </div>
-                      ))}
+                          )
+                        })
+                        .filter(Boolean)}
                     </div>
                   )}
                 </div>
@@ -412,7 +443,7 @@ export default function AdminDashboard() {
                       <option value="replied">Replied</option>
                     </select>
                   </div>
-                  {contacts.length === 0 ? (
+                  {!contacts || contacts.length === 0 ? (
                     <div className="text-center py-12">
                       <Mail className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                       <p className="text-slate-600">No messages found</p>
@@ -422,14 +453,17 @@ export default function AdminDashboard() {
                       <div className="space-y-3 max-h-[600px] overflow-y-auto">
                         {contacts
                           .filter(contact => {
+                            if (!contact) return false
                             const matchesSearch = !searchQuery || 
-                              contact.seller_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              contact.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              (contact.buyer_requests.profiles?.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+                              (contact.seller_email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (contact.message || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (contact.buyer_requests?.profiles?.email || '').toLowerCase().includes(searchQuery.toLowerCase())
                             const matchesStatus = statusFilter === 'all' || contact.status === statusFilter
                             return matchesSearch && matchesStatus
                           })
-                          .map(contact => (
+                          .map(contact => {
+                            if (!contact || !contact.buyer_requests) return null
+                            return (
                             <div 
                               key={contact.id} 
                               onClick={() => setSelectedContact(contact)}
@@ -466,7 +500,9 @@ export default function AdminDashboard() {
                                 </p>
                               </div>
                             </div>
-                          ))}
+                            )
+                          })
+                          .filter(Boolean)}
                       </div>
                       {selectedContact && (
                         <div className="lg:sticky lg:top-4 lg:h-[600px] lg:overflow-y-auto">
