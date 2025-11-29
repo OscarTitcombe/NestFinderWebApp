@@ -21,6 +21,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useToast } from '@/lib/toast'
 import ConfirmDialog from '@/components/ConfirmDialog'
+import { AdminDashboardSkeleton } from '@/components/Skeletons'
 
 interface Stats {
   users: { total: number }
@@ -214,16 +215,9 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen bg-light flex flex-col">
         <Navbar />
-        <main className="flex-1 container-custom py-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-slate-200 rounded w-1/4"></div>
-              <div className="grid grid-cols-4 gap-4">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="h-24 bg-slate-200 rounded"></div>
-                ))}
-              </div>
-            </div>
+        <main className="flex-1 py-4 sm:py-6 lg:py-8">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+            <AdminDashboardSkeleton />
           </div>
         </main>
         <Footer />
@@ -753,7 +747,7 @@ export default function AdminDashboard() {
                       <p className="text-slate-600">No users found</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2">
+                    <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
                       {users
                         .filter(user => 
                           !searchQuery || 
@@ -762,9 +756,10 @@ export default function AdminDashboard() {
                         )
                         .map(user => (
                         <div key={user.id} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
-                          <div className="flex justify-between items-start mb-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            {/* Left Side - User Info */}
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center gap-2 mb-2">
                                 <p className="font-bold text-dark truncate">{user.email}</p>
                                 {user.role === 'admin' && (
                                   <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold flex-shrink-0">
@@ -780,41 +775,41 @@ export default function AdminDashboard() {
                                 <span className="capitalize">{user.role || 'both'}</span>
                               </div>
                             </div>
-                          </div>
 
-                          {/* Stats */}
-                          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100">
-                            <div className="text-center">
-                              <div className="flex items-center justify-center gap-1 mb-1">
-                                <FileText className="w-4 h-4 text-nest-mint" />
-                                <span className="text-lg font-bold text-dark">{user.buyerRequestCount || 0}</span>
+                            {/* Right Side - Stats */}
+                            <div className="flex items-center gap-6 sm:gap-8">
+                              <div className="text-center">
+                                <div className="flex items-center justify-center gap-1 mb-1">
+                                  <FileText className="w-4 h-4 text-nest-mint" />
+                                  <span className="text-lg font-bold text-dark">{user.buyerRequestCount || 0}</span>
+                                </div>
+                                <p className="text-xs text-slate-500">Total Requests</p>
+                                {user.activeBuyerRequestCount > 0 && (
+                                  <p className="text-xs text-green-600 font-medium mt-0.5">
+                                    {user.activeBuyerRequestCount} active
+                                  </p>
+                                )}
                               </div>
-                              <p className="text-xs text-slate-500">Total Requests</p>
-                              {user.activeBuyerRequestCount > 0 && (
-                                <p className="text-xs text-green-600 font-medium mt-0.5">
-                                  {user.activeBuyerRequestCount} active
-                                </p>
-                              )}
-                            </div>
-                            <div className="text-center">
-                              <div className="flex items-center justify-center gap-1 mb-1">
-                                <Mail className="w-4 h-4 text-nest-mint" />
-                                <span className="text-lg font-bold text-dark">{user.messageCount || 0}</span>
+                              <div className="text-center">
+                                <div className="flex items-center justify-center gap-1 mb-1">
+                                  <Mail className="w-4 h-4 text-nest-mint" />
+                                  <span className="text-lg font-bold text-dark">{user.messageCount || 0}</span>
+                                </div>
+                                <p className="text-xs text-slate-500">Messages Sent</p>
                               </div>
-                              <p className="text-xs text-slate-500">Messages Sent</p>
-                            </div>
-                            <div className="text-center">
-                              <button
-                                onClick={() => {
-                                  setSelectedUserId(user.id)
-                                  setActiveTab('buyer-requests')
-                                }}
-                                className="w-full px-3 py-2 text-xs bg-nest-mint/10 text-nest-mint rounded-lg hover:bg-nest-mint/20 transition-colors font-medium flex items-center justify-center gap-1.5"
-                                disabled={!user.buyerRequestCount || user.buyerRequestCount === 0}
-                              >
-                                <Eye className="w-3.5 h-3.5" />
-                                View Requests
-                              </button>
+                              <div>
+                                <button
+                                  onClick={() => {
+                                    setSelectedUserId(user.id)
+                                    setActiveTab('buyer-requests')
+                                  }}
+                                  className="px-4 py-2 text-sm bg-nest-mint/10 text-nest-mint rounded-lg hover:bg-nest-mint/20 transition-colors font-medium flex items-center justify-center gap-2 whitespace-nowrap"
+                                  disabled={!user.buyerRequestCount || user.buyerRequestCount === 0}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                  View Requests
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
