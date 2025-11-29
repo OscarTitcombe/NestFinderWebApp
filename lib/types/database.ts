@@ -15,7 +15,7 @@ export interface Database {
           email: string
           full_name: string | null
           phone: string | null
-          role: 'buyer' | 'seller' | 'both' | null
+          role: 'buyer' | 'seller' | 'both' | 'admin' | null
           created_at: string
           updated_at: string
         }
@@ -24,7 +24,7 @@ export interface Database {
           email: string
           full_name?: string | null
           phone?: string | null
-          role?: 'buyer' | 'seller' | 'both' | null
+          role?: 'buyer' | 'seller' | 'both' | 'admin' | null
           created_at?: string
           updated_at?: string
         }
@@ -33,7 +33,7 @@ export interface Database {
           email?: string
           full_name?: string | null
           phone?: string | null
-          role?: 'buyer' | 'seller' | 'both' | null
+          role?: 'buyer' | 'seller' | 'both' | 'admin' | null
           created_at?: string
           updated_at?: string
         }

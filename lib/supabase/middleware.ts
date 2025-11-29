@@ -50,11 +50,34 @@ export async function updateSession(request: NextRequest) {
     // Note: /verify should NOT be protected as users need to access it to verify their email
     if (
       !user &&
-      request.nextUrl.pathname.startsWith('/dashboard')
+      (request.nextUrl.pathname.startsWith('/dashboard') ||
+       request.nextUrl.pathname.startsWith('/inbox'))
     ) {
       const url = request.nextUrl.clone()
       url.pathname = '/signin'
       return NextResponse.redirect(url)
+    }
+
+    // Admin routes - check admin status server-side
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+      if (!user) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/signin'
+        return NextResponse.redirect(url)
+      }
+
+      // Check if user is admin (server-side check)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (!profile || profile.role !== 'admin') {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
+      }
     }
 
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're

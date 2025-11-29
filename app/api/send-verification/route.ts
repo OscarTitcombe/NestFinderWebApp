@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { rateLimit, getClientIdentifier } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -11,6 +12,57 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
+      )
+    }
+
+    // Rate limiting: 5 requests per hour per email address (stricter than notification route)
+    // This prevents email spam/abuse while allowing legitimate retries
+    const emailKey = `verification:${email.toLowerCase().trim()}`
+    const limitResult = rateLimit(emailKey, {
+      windowMs: 3600000, // 1 hour
+      maxRequests: 5
+    })
+
+    if (!limitResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many verification requests', 
+          message: limitResult.message || 'Please wait before requesting another verification email. You can request up to 5 verification emails per hour per email address.'
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '5',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': limitResult.resetTime.toString(),
+            'Retry-After': Math.ceil((limitResult.resetTime - Date.now()) / 1000).toString()
+          }
+        }
+      )
+    }
+
+    // Also rate limit by IP to prevent abuse from single IP
+    const clientId = getClientIdentifier(request)
+    const ipLimitResult = rateLimit(`verification-ip:${clientId}`, {
+      windowMs: 3600000, // 1 hour
+      maxRequests: 10 // Allow 10 different email addresses per IP per hour
+    })
+
+    if (!ipLimitResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests from this IP', 
+          message: 'Please wait before making another request. Too many verification requests from this IP address.'
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '10',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': ipLimitResult.resetTime.toString(),
+            'Retry-After': Math.ceil((ipLimitResult.resetTime - Date.now()) / 1000).toString()
+          }
+        }
       )
     }
 

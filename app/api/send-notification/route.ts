@@ -5,6 +5,18 @@ import { rateLimit, getClientIdentifier } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    // Authentication check: Only logged-in users can send notifications
+    const { createClient } = await import('@/lib/supabase/server')
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (!user || authError) {
+      return NextResponse.json(
+        { error: 'Unauthorized', message: 'Please sign in to send notifications to buyers.' },
+        { status: 401 }
+      )
+    }
+
     // Rate limiting: 10 requests per minute per IP
     const clientId = getClientIdentifier(request)
     const limitResult = rateLimit(clientId, {

@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { signOut } from '@/lib/supabase/auth'
 import { useAuth } from '@/lib/auth-context'
-import { User, LogOut, Menu, X } from 'lucide-react'
+import { User, LogOut, Menu, X, Shield } from 'lucide-react'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -14,7 +14,20 @@ export default function Navbar() {
   const isHome = pathname === '/'
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const { user, isLoading } = useAuth()
+
+  // Check admin status
+  useEffect(() => {
+    if (user) {
+      fetch('/api/admin/check')
+        .then(res => res.json())
+        .then(data => setIsAdmin(data.isAdmin || false))
+        .catch(() => setIsAdmin(false))
+    } else {
+      setIsAdmin(false)
+    }
+  }, [user])
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -115,6 +128,16 @@ export default function Navbar() {
                     >
                       Inbox
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="block px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors flex items-center space-x-2"
+                      >
+                        <Shield className="w-4 h-4" />
+                        <span>Admin</span>
+                      </Link>
+                    )}
                     <button
                       onClick={handleSignOut}
                       className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center space-x-2"
@@ -201,6 +224,16 @@ export default function Navbar() {
                   >
                     Inbox
                   </Link>
+                  {isAdmin && (
+                    <Link 
+                      href="/admin" 
+                      className="block text-purple-700 hover:text-purple-800 transition-colors font-medium focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none rounded-lg px-2 py-2 flex items-center space-x-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Shield className="w-4 h-4" />
+                      <span>Admin</span>
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       handleSignOut()
