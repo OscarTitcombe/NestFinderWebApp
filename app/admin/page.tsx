@@ -9,7 +9,13 @@ import {
   TrendingUp,
   Trash2,
   Search,
-  X
+  X,
+  MapPin,
+  Home,
+  Calendar,
+  DollarSign,
+  ExternalLink,
+  Eye
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -24,6 +30,7 @@ interface Stats {
 
 interface BuyerRequest {
   id: string
+  user_id: string | null
   budget_min: number
   budget_max: number
   beds_min: number
@@ -69,6 +76,7 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [buyerStatusFilter, setBuyerStatusFilter] = useState<string>('all')
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
@@ -317,6 +325,23 @@ export default function AdminDashboard() {
               {/* Buyer Requests Tab */}
               {activeTab === 'buyer-requests' && (
                 <div className="space-y-4">
+                  {selectedUserId && (
+                    <div className="bg-nest-mint/10 border border-nest-mint/20 rounded-lg p-3 mb-4 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-nest-mint" />
+                        <span className="text-sm font-medium text-dark">
+                          Showing requests for: {users.find(u => u.id === selectedUserId)?.email || 'User'}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => setSelectedUserId(null)}
+                        className="text-xs text-nest-mint hover:text-nest-mintHover font-medium flex items-center gap-1"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                        Clear filter
+                      </button>
+                    </div>
+                  )}
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
                     <div className="flex-1 flex items-center gap-2">
                       <Search className="w-4 h-4 text-slate-400" />
@@ -346,10 +371,12 @@ export default function AdminDashboard() {
                       <p className="text-slate-600">No buyer requests found</p>
                     </div>
                   ) : (
-                    <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                    <div className="grid grid-cols-1 gap-4 max-h-[600px] overflow-y-auto pr-2">
                       {buyerRequests
                         .filter(br => {
                           if (!br) return false
+                          // Filter by selected user if set
+                          if (selectedUserId && br.user_id !== selectedUserId) return false
                           const matchesSearch = !searchQuery || 
                             (br.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                             (br.profiles?.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -361,54 +388,93 @@ export default function AdminDashboard() {
                         .map(request => {
                           if (!request) return null
                           return (
-                            <div key={request.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-semibold text-dark">
-                                  {formatCurrency(request.budget_min)} - {formatCurrency(request.budget_max)}
-                                </span>
-                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                  request.status === 'active' ? 'bg-green-100 text-green-700' :
-                                  request.status === 'paused' ? 'bg-yellow-100 text-yellow-700' :
-                                  'bg-slate-100 text-slate-700'
-                                }`}>
-                                  {request.status}
-                                </span>
+                            <div key={request.id} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+                              <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                                {/* Main Content */}
+                                <div className="flex-1 space-y-3">
+                                  {/* Header Row */}
+                                  <div className="flex items-start justify-between gap-3">
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <DollarSign className="w-4 h-4 text-nest-mint flex-shrink-0" />
+                                        <span className="text-lg font-bold text-dark">
+                                          {formatCurrency(request.budget_min)} - {formatCurrency(request.budget_max)}
+                                        </span>
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                                          request.status === 'active' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                          request.status === 'paused' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                                          request.status === 'fulfilled' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                                          'bg-slate-100 text-slate-700 border border-slate-200'
+                                        }`}>
+                                          {request.status}
+                                        </span>
+                                      </div>
+                                      
+                                      {/* Property Details */}
+                                      <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                                        <div className="flex items-center gap-1.5">
+                                          <Home className="w-4 h-4 text-slate-400" />
+                                          <span>{request.beds_min} {request.beds_min === 1 ? 'bed' : 'beds'}</span>
+                                          <span className="text-slate-300">•</span>
+                                          <span className="capitalize">{request.property_type}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                          <MapPin className="w-4 h-4 text-slate-400" />
+                                          <span className="max-w-[200px] truncate">
+                                            {Array.isArray(request.postcode_districts) ? request.postcode_districts.join(', ') : ''}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Actions */}
+                                    <div className="flex gap-2 flex-shrink-0">
+                                      <select
+                                        value={request.status}
+                                        onChange={(e) => handleUpdateStatus(request.id, e.target.value)}
+                                        className="text-xs border border-slate-200 rounded-lg px-3 py-1.5 bg-white hover:bg-slate-50 transition-colors font-medium"
+                                      >
+                                        <option value="active">Active</option>
+                                        <option value="paused">Paused</option>
+                                        <option value="fulfilled">Fulfilled</option>
+                                        <option value="expired">Expired</option>
+                                      </select>
+                                      <button
+                                        onClick={() => handleDeleteBuyerRequest(request.id)}
+                                        className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        title="Delete"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {/* Description */}
+                                  {request.description && (
+                                    <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                      <p className="text-sm text-slate-700 leading-relaxed">{request.description}</p>
+                                    </div>
+                                  )}
+
+                                  {/* Footer Info */}
+                                  <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-100">
+                                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                      <Mail className="w-3.5 h-3.5" />
+                                      <span className="truncate max-w-[200px]">{request.profiles?.email || request.email}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                      <Calendar className="w-3.5 h-3.5" />
+                                      <span>Posted {formatDate(request.created_at)}</span>
+                                    </div>
+                                    {request.profiles?.full_name && (
+                                      <div className="text-xs text-slate-500">
+                                        <span className="font-medium">User:</span> {request.profiles.full_name}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
-                              <p className="text-sm text-slate-600 mb-1">
-                                {request.beds_min} beds • {request.property_type} • {Array.isArray(request.postcode_districts) ? request.postcode_districts.join(', ') : ''}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                {request.profiles?.email || request.email} • {formatDate(request.created_at)}
-                              </p>
                             </div>
-                            <div className="flex gap-2">
-                              <select
-                                value={request.status}
-                                onChange={(e) => handleUpdateStatus(request.id, e.target.value)}
-                                className="text-xs border border-slate-200 rounded px-2 py-1"
-                              >
-                                <option value="active">Active</option>
-                                <option value="paused">Paused</option>
-                                <option value="fulfilled">Fulfilled</option>
-                                <option value="expired">Expired</option>
-                              </select>
-                              <button
-                                onClick={() => handleDeleteBuyerRequest(request.id)}
-                                className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                                title="Delete"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                            {request.description && (
-                              <div className="mt-2 pt-2 border-t border-slate-200">
-                                <p className="text-xs text-slate-600 line-clamp-2">{request.description}</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
                           )
                         })
                         .filter(Boolean)}
@@ -573,11 +639,23 @@ export default function AdminDashboard() {
                     <Search className="w-4 h-4 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="Search users..."
+                      placeholder="Search users by email or name..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
                     />
+                    {selectedUserId && (
+                      <button
+                        onClick={() => {
+                          setSelectedUserId(null)
+                          setActiveTab('buyer-requests')
+                        }}
+                        className="px-3 py-2 text-sm bg-nest-mint text-white rounded-lg hover:bg-nest-mintHover transition-colors flex items-center gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View Requests
+                      </button>
+                    )}
                   </div>
                   {users.length === 0 ? (
                     <div className="text-center py-12">
@@ -585,7 +663,7 @@ export default function AdminDashboard() {
                       <p className="text-slate-600">No users found</p>
                     </div>
                   ) : (
-                    <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2">
                       {users
                         .filter(user => 
                           !searchQuery || 
@@ -593,20 +671,61 @@ export default function AdminDashboard() {
                           (user.full_name || '').toLowerCase().includes(searchQuery.toLowerCase())
                         )
                         .map(user => (
-                        <div key={user.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-semibold text-dark">{user.email}</p>
-                              <p className="text-sm text-slate-600">{user.full_name || 'No name'}</p>
-                              <p className="text-xs text-slate-500 mt-1">
-                                Role: {user.role || 'both'} • Joined: {formatDate(user.created_at)}
-                              </p>
+                        <div key={user.id} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-bold text-dark truncate">{user.email}</p>
+                                {user.role === 'admin' && (
+                                  <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold flex-shrink-0">
+                                    Admin
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600 mb-2">{user.full_name || 'No name provided'}</p>
+                              <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                <Calendar className="w-3.5 h-3.5" />
+                                <span>Joined {formatDate(user.created_at)}</span>
+                                <span className="text-slate-300">•</span>
+                                <span className="capitalize">{user.role || 'both'}</span>
+                              </div>
                             </div>
-                            {user.role === 'admin' && (
-                              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">
-                                Admin
-                              </span>
-                            )}
+                          </div>
+
+                          {/* Stats */}
+                          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100">
+                            <div className="text-center">
+                              <div className="flex items-center justify-center gap-1 mb-1">
+                                <FileText className="w-4 h-4 text-nest-mint" />
+                                <span className="text-lg font-bold text-dark">{user.buyerRequestCount || 0}</span>
+                              </div>
+                              <p className="text-xs text-slate-500">Total Requests</p>
+                              {user.activeBuyerRequestCount > 0 && (
+                                <p className="text-xs text-green-600 font-medium mt-0.5">
+                                  {user.activeBuyerRequestCount} active
+                                </p>
+                              )}
+                            </div>
+                            <div className="text-center">
+                              <div className="flex items-center justify-center gap-1 mb-1">
+                                <Mail className="w-4 h-4 text-nest-mint" />
+                                <span className="text-lg font-bold text-dark">{user.messageCount || 0}</span>
+                              </div>
+                              <p className="text-xs text-slate-500">Messages Sent</p>
+                            </div>
+                            <div className="text-center">
+                              <button
+                                onClick={() => {
+                                  setSelectedUserId(user.id)
+                                  setActiveTab('buyer-requests')
+                                }}
+                                className="w-full px-3 py-2 text-xs bg-nest-mint/10 text-nest-mint rounded-lg hover:bg-nest-mint/20 transition-colors font-medium flex items-center justify-center gap-1.5"
+                                disabled={!user.buyerRequestCount || user.buyerRequestCount === 0}
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                View Requests
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}

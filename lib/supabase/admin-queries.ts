@@ -292,7 +292,7 @@ export async function adminGetAllUsers() {
   await requireAdmin()
   const supabase = await createClient()
   
-  const { data, error } = await supabase
+  const { data: users, error } = await supabase
     .from('profiles')
     .select('*')
     .order('created_at', { ascending: false })
@@ -302,7 +302,52 @@ export async function adminGetAllUsers() {
     throw error
   }
 
-  return data as Profile[]
+  if (!users || users.length === 0) {
+    return []
+  }
+
+  // Get buyer request counts for each user
+  const userIds = users.map(u => u.id)
+  const { data: buyerRequests } = await supabase
+    .from('buyer_requests')
+    .select('user_id, status')
+    .in('user_id', userIds)
+
+  // Count requests per user
+  const requestCounts = new Map<string, { total: number; active: number }>()
+  buyerRequests?.forEach(br => {
+    if (br.user_id) {
+      const current = requestCounts.get(br.user_id) || { total: 0, active: 0 }
+      current.total++
+      if (br.status === 'active') current.active++
+      requestCounts.set(br.user_id, current)
+    }
+  })
+
+  // Get contact counts (messages sent by users as sellers)
+  const { data: contacts } = await supabase
+    .from('contacts')
+    .select('seller_id')
+    .in('seller_id', userIds)
+
+  const contactCounts = new Map<string, number>()
+  contacts?.forEach(c => {
+    if (c.seller_id) {
+      contactCounts.set(c.seller_id, (contactCounts.get(c.seller_id) || 0) + 1)
+    }
+  })
+
+  // Combine data
+  return users.map(user => ({
+    ...user,
+    buyerRequestCount: requestCounts.get(user.id)?.total || 0,
+    activeBuyerRequestCount: requestCounts.get(user.id)?.active || 0,
+    messageCount: contactCounts.get(user.id) || 0
+  })) as (Profile & {
+    buyerRequestCount: number
+    activeBuyerRequestCount: number
+    messageCount: number
+  })[]
 }
 
 export async function adminUpdateUser(id: string, updates: Partial<Profile>) {
