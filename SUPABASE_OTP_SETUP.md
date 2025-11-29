@@ -53,7 +53,7 @@ Your NestFinder sign-in code
     <h2 style="color: #101314; margin-top: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em;">Your sign-in code</h2>
     
     <p style="color: #2B3135; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
-      Enter this 6-digit code to sign in to your NestFinder account:
+      Enter this 8-digit code to sign in to your NestFinder account:
     </p>
     
     <!-- Code display with brand styling -->

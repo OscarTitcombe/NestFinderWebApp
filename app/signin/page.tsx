@@ -96,8 +96,8 @@ function SignInPageContent() {
     e.preventDefault()
     setError(null)
 
-    if (!otpCode || otpCode.length !== 6) {
-      setError('Please enter the 6-digit code')
+    if (!otpCode || otpCode.length !== 8) {
+      setError('Please enter the 8-digit code')
       return
     }
 
@@ -179,7 +179,7 @@ function SignInPageContent() {
             {/* Email Card */}
             <div className="bg-white rounded-xl border border-slate-200 p-5 sm:p-6 mb-6 sm:mb-8 shadow-sm">
               <p className="text-sm sm:text-base text-slate-600 mb-3">
-                We've sent a 6-digit code to
+                We've sent an 8-digit code to
               </p>
               
               {/* Email Display */}
@@ -206,33 +206,27 @@ function SignInPageContent() {
               <form onSubmit={handleVerifyCode} className="space-y-4">
                 <div>
                   <label htmlFor="otp-code" className="block text-xs sm:text-sm font-medium text-slate-700 mb-2 text-left">
-                    6-digit code
+                    8-digit code
                   </label>
                   <input
                     type="text"
                     id="otp-code"
                     value={otpCode}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 6)
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 8)
                       setOtpCode(value)
                       setError(null)
                     }}
-                    placeholder="000000"
+                    placeholder="00000000"
                     className="input-primary w-full text-center text-2xl font-mono tracking-widest text-sm sm:text-base"
-                    maxLength={6}
+                    maxLength={8}
                     autoFocus
                     required
                     disabled={isVerifyingCode}
                   />
                   <p className="text-xs text-slate-500 mt-2 mb-3">
-                    Enter the 6-digit code from your email. Works on any device!
+                    Enter the 8-digit code from your email. Works on any device!
                   </p>
-                  
-                  <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                    <p className="text-xs text-green-800 text-left">
-                      <strong>Cross-device friendly:</strong> You can request the code on one device and enter it on another. Perfect if you're switching devices!
-                    </p>
-                  </div>
                 </div>
 
                 {error && (
@@ -244,7 +238,7 @@ function SignInPageContent() {
 
                 <PrimaryButton
                   type="submit"
-                  disabled={isVerifyingCode || otpCode.length !== 6}
+                  disabled={isVerifyingCode || otpCode.length !== 8}
                   className="w-full min-h-[44px] text-sm sm:text-base"
                 >
                   {isVerifyingCode ? (
@@ -293,7 +287,7 @@ function SignInPageContent() {
             
             {/* Subtext */}
             <p className="text-sm sm:text-base lg:text-lg text-slate-600 mb-6 sm:mb-8 max-w-md mx-auto">
-              Enter your email address and we'll send you a 6-digit code to sign in. Works on any device!
+              Enter your email address and we'll send you an 8-digit code to sign in. Works on any device!
             </p>
 
             {/* Sign In Form */}
