@@ -278,16 +278,12 @@ export async function adminGetStats() {
     { count: totalUsers },
     { count: totalBuyerRequests },
     { count: activeBuyerRequests },
-    { count: totalSellerProperties },
-    { count: activeSellerProperties },
     { count: totalContacts },
     { count: unreadContacts }
   ] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('buyer_requests').select('*', { count: 'exact', head: true }),
     supabase.from('buyer_requests').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-    supabase.from('seller_properties').select('*', { count: 'exact', head: true }),
-    supabase.from('seller_properties').select('*', { count: 'exact', head: true }).eq('status', 'active'),
     supabase.from('contacts').select('*', { count: 'exact', head: true }),
     supabase.from('contacts').select('*', { count: 'exact', head: true }).in('status', ['pending', 'sent'])
   ])
@@ -299,10 +295,6 @@ export async function adminGetStats() {
     buyerRequests: {
       total: totalBuyerRequests || 0,
       active: activeBuyerRequests || 0
-    },
-    sellerProperties: {
-      total: totalSellerProperties || 0,
-      active: activeSellerProperties || 0
     },
     contacts: {
       total: totalContacts || 0,

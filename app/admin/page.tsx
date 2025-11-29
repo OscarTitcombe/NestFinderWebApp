@@ -5,18 +5,11 @@ import { useRouter } from 'next/navigation'
 import { 
   Users, 
   FileText, 
-  Home, 
   Mail, 
-  TrendingUp, 
-  AlertCircle,
-  Edit,
+  TrendingUp,
   Trash2,
   Search,
-  Filter,
-  ChevronDown,
-  X,
-  Eye,
-  EyeOff
+  X
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -26,7 +19,6 @@ import ConfirmDialog from '@/components/ConfirmDialog'
 interface Stats {
   users: { total: number }
   buyerRequests: { total: number; active: number }
-  sellerProperties: { total: number; active: number }
   contacts: { total: number; unread: number }
 }
 
@@ -45,19 +37,6 @@ interface BuyerRequest {
   profiles: { id: string; email: string; full_name: string | null } | null
 }
 
-interface SellerProperty {
-  id: string
-  postcode_district: string
-  property_type: string
-  expected_price_min: number | null
-  expected_price_max: number | null
-  bedrooms: number | null
-  timeframe: string | null
-  features: string[] | null
-  status: string
-  created_at: string
-  profiles: { id: string; email: string; full_name: string | null } | null
-}
 
 interface Contact {
   id: string
@@ -75,7 +54,7 @@ interface Contact {
   seller_profiles: { id: string; email: string; full_name: string | null } | null
 }
 
-type TabType = 'overview' | 'buyer-requests' | 'seller-properties' | 'messages' | 'users'
+type TabType = 'overview' | 'buyer-requests' | 'messages' | 'users'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -84,10 +63,12 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('overview')
   const [stats, setStats] = useState<Stats | null>(null)
   const [buyerRequests, setBuyerRequests] = useState<BuyerRequest[]>([])
-  const [sellerProperties, setSellerProperties] = useState<SellerProperty[]>([])
   const [contacts, setContacts] = useState<Contact[]>([])
   const [users, setUsers] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [buyerStatusFilter, setBuyerStatusFilter] = useState<string>('all')
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
@@ -115,17 +96,15 @@ export default function AdminDashboard() {
         throw new Error('Failed to load admin data')
       }
 
-      const [statsData, buyerData, sellerData, contactsData, usersData] = await Promise.all([
+      const [statsData, buyerData, contactsData, usersData] = await Promise.all([
         fetch('/api/admin/stats').then(r => r.json()),
         fetch('/api/admin/buyer-requests').then(r => r.json()),
-        fetch('/api/admin/seller-properties').then(r => r.json()),
         fetch('/api/admin/contacts').then(r => r.json()),
         fetch('/api/admin/users').then(r => r.json())
       ])
 
       setStats(statsData)
       setBuyerRequests(buyerData)
-      setSellerProperties(sellerData)
       setContacts(contactsData)
       setUsers(usersData)
     } catch (error: any) {
@@ -160,36 +139,17 @@ export default function AdminDashboard() {
     })
   }
 
-  const handleDeleteSellerProperty = (id: string) => {
-    setConfirmDialog({
-      isOpen: true,
-      title: 'Delete Seller Property',
-      message: 'Are you sure you want to delete this seller property? This action cannot be undone.',
-      variant: 'danger',
-      onConfirm: async () => {
-        try {
-          const res = await fetch(`/api/admin/seller-properties?id=${id}`, { method: 'DELETE' })
-          if (!res.ok) throw new Error('Failed to delete')
-          await loadData()
-          toast.showToast('Seller property deleted', 'success')
-        } catch (error: any) {
-          toast.showToast(error.message || 'Failed to delete', 'error')
-        } finally {
-          setConfirmDialog({ ...confirmDialog, isOpen: false })
-        }
-      }
-    })
-  }
-
-  const handleUpdateStatus = async (type: 'buyer' | 'seller', id: string, newStatus: string) => {
+  const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
-      const endpoint = type === 'buyer' ? '/api/admin/buyer-requests' : '/api/admin/seller-properties'
-      const res = await fetch(endpoint, {
+      const res = await fetch('/api/admin/buyer-requests', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status: newStatus })
       })
-      if (!res.ok) throw new Error('Failed to update')
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to update')
+      }
       await loadData()
       toast.showToast('Status updated', 'success')
     } catch (error: any) {
@@ -250,7 +210,7 @@ export default function AdminDashboard() {
 
           {/* Stats Cards */}
           {stats && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs text-slate-600">Total Users</p>
@@ -265,14 +225,6 @@ export default function AdminDashboard() {
                 </div>
                 <p className="text-2xl font-bold text-dark">{stats.buyerRequests.total}</p>
                 <p className="text-xs text-slate-500 mt-1">{stats.buyerRequests.active} active</p>
-              </div>
-              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-slate-600">Seller Properties</p>
-                  <Home className="w-5 h-5 text-nest-mint" />
-                </div>
-                <p className="text-2xl font-bold text-dark">{stats.sellerProperties.total}</p>
-                <p className="text-xs text-slate-500 mt-1">{stats.sellerProperties.active} active</p>
               </div>
               <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
@@ -291,7 +243,6 @@ export default function AdminDashboard() {
               {[
                 { id: 'overview', label: 'Overview', icon: TrendingUp },
                 { id: 'buyer-requests', label: 'Buyer Requests', icon: FileText },
-                { id: 'seller-properties', label: 'Seller Properties', icon: Home },
                 { id: 'messages', label: 'Messages', icon: Mail },
                 { id: 'users', label: 'Users', icon: Users }
               ].map(tab => {
@@ -323,9 +274,9 @@ export default function AdminDashboard() {
                     <h3 className="text-lg font-bold text-dark mb-4">Quick Stats</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-slate-50 rounded-lg p-4">
-                        <p className="text-sm text-slate-600 mb-1">Active Listings</p>
+                        <p className="text-sm text-slate-600 mb-1">Active Buyer Requests</p>
                         <p className="text-2xl font-bold text-dark">
-                          {(stats?.buyerRequests.active || 0) + (stats?.sellerProperties.active || 0)}
+                          {stats?.buyerRequests.active || 0}
                         </p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-4">
@@ -340,24 +291,47 @@ export default function AdminDashboard() {
               {/* Buyer Requests Tab */}
               {activeTab === 'buyer-requests' && (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Search className="w-4 h-4 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="Search buyer requests..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    />
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
+                    <div className="flex-1 flex items-center gap-2">
+                      <Search className="w-4 h-4 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder="Search buyer requests..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      />
+                    </div>
+                    <select
+                      value={buyerStatusFilter}
+                      onChange={(e) => setBuyerStatusFilter(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="paused">Paused</option>
+                      <option value="fulfilled">Fulfilled</option>
+                      <option value="expired">Expired</option>
+                    </select>
                   </div>
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                    {buyerRequests
-                      .filter(br => 
-                        !searchQuery || 
-                        br.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        br.postcode_districts.some(pc => pc.toLowerCase().includes(searchQuery.toLowerCase()))
-                      )
-                      .map(request => (
+                  {buyerRequests.length === 0 ? (
+                    <div className="text-center py-12">
+                      <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-600">No buyer requests found</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                      {buyerRequests
+                        .filter(br => {
+                          const matchesSearch = !searchQuery || 
+                            br.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (br.profiles?.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            br.postcode_districts.some(pc => pc.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                            br.description.toLowerCase().includes(searchQuery.toLowerCase())
+                          const matchesStatus = buyerStatusFilter === 'all' || br.status === buyerStatusFilter
+                          return matchesSearch && matchesStatus
+                        })
+                        .map(request => (
                         <div key={request.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex-1">
@@ -383,7 +357,7 @@ export default function AdminDashboard() {
                             <div className="flex gap-2">
                               <select
                                 value={request.status}
-                                onChange={(e) => handleUpdateStatus('buyer', request.id, e.target.value)}
+                                onChange={(e) => handleUpdateStatus(request.id, e.target.value)}
                                 className="text-xs border border-slate-200 rounded px-2 py-1"
                               >
                                 <option value="active">Active</option>
@@ -399,127 +373,160 @@ export default function AdminDashboard() {
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Seller Properties Tab */}
-              {activeTab === 'seller-properties' && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Search className="w-4 h-4 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="Search seller properties..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    />
-                  </div>
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                    {sellerProperties
-                      .filter(sp => 
-                        !searchQuery || 
-                        sp.postcode_district.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        (sp.profiles?.email || '').toLowerCase().includes(searchQuery.toLowerCase())
-                      )
-                      .map(property => (
-                        <div key={property.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-semibold text-dark">
-                                  {property.postcode_district} • {property.property_type}
-                                </span>
-                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                  property.status === 'active' ? 'bg-green-100 text-green-700' :
-                                  property.status === 'paused' ? 'bg-yellow-100 text-yellow-700' :
-                                  'bg-slate-100 text-slate-700'
-                                }`}>
-                                  {property.status}
-                                </span>
+                            {request.description && (
+                              <div className="mt-2 pt-2 border-t border-slate-200">
+                                <p className="text-xs text-slate-600 line-clamp-2">{request.description}</p>
                               </div>
-                              <p className="text-sm text-slate-600 mb-1">
-                                {property.bedrooms ? `${property.bedrooms} beds` : ''} • {property.timeframe || 'No timeframe'}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                {property.profiles?.email} • {formatDate(property.created_at)}
-                              </p>
-                            </div>
-                            <div className="flex gap-2">
-                              <select
-                                value={property.status}
-                                onChange={(e) => handleUpdateStatus('seller', property.id, e.target.value)}
-                                className="text-xs border border-slate-200 rounded px-2 py-1"
-                              >
-                                <option value="active">Active</option>
-                                <option value="paused">Paused</option>
-                                <option value="sold">Sold</option>
-                                <option value="withdrawn">Withdrawn</option>
-                              </select>
-                              <button
-                                onClick={() => handleDeleteSellerProperty(property.id)}
-                                className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                                title="Delete"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
+                            )}
                           </div>
                         </div>
                       ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Messages Tab */}
               {activeTab === 'messages' && (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Search className="w-4 h-4 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="Search messages..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    />
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
+                    <div className="flex-1 flex items-center gap-2">
+                      <Search className="w-4 h-4 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder="Search messages..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      />
+                    </div>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="pending">Pending</option>
+                      <option value="sent">Sent</option>
+                      <option value="read">Read</option>
+                      <option value="replied">Replied</option>
+                    </select>
                   </div>
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                    {contacts
-                      .filter(contact => 
-                        !searchQuery || 
-                        contact.seller_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        contact.message.toLowerCase().includes(searchQuery.toLowerCase())
-                      )
-                      .map(contact => (
-                        <div key={contact.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex-1">
-                              <p className="font-semibold text-dark mb-1">
-                                From: {contact.seller_email}
-                              </p>
-                              <p className="text-sm text-slate-600 mb-1 line-clamp-2">
-                                {contact.message}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                To: {contact.buyer_requests.profiles?.email || 'Unknown'} • {formatDate(contact.created_at)}
-                              </p>
+                  {contacts.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Mail className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-600">No messages found</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                        {contacts
+                          .filter(contact => {
+                            const matchesSearch = !searchQuery || 
+                              contact.seller_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              contact.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (contact.buyer_requests.profiles?.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+                            const matchesStatus = statusFilter === 'all' || contact.status === statusFilter
+                            return matchesSearch && matchesStatus
+                          })
+                          .map(contact => (
+                            <div 
+                              key={contact.id} 
+                              onClick={() => setSelectedContact(contact)}
+                              className={`bg-slate-50 rounded-lg p-4 border cursor-pointer transition-all ${
+                                selectedContact?.id === contact.id 
+                                  ? 'border-nest-mint bg-nest-mint/5 shadow-md' 
+                                  : 'border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-semibold text-dark mb-1 truncate">
+                                    From: {contact.seller_email}
+                                  </p>
+                                  <p className="text-sm text-slate-600 mb-1 line-clamp-2">
+                                    {contact.message}
+                                  </p>
+                                  <p className="text-xs text-slate-500 truncate">
+                                    To: {contact.buyer_requests.profiles?.email || 'Unknown'} • {formatDate(contact.created_at)}
+                                  </p>
+                                </div>
+                                <span className={`px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ml-2 ${
+                                  contact.status === 'read' ? 'bg-green-100 text-green-700' :
+                                  contact.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                  contact.status === 'replied' ? 'bg-blue-100 text-blue-700' :
+                                  'bg-slate-100 text-slate-700'
+                                }`}>
+                                  {contact.status}
+                                </span>
+                              </div>
+                              <div className="mt-2 pt-2 border-t border-slate-200">
+                                <p className="text-xs text-slate-500 truncate">
+                                  {formatCurrency(contact.buyer_requests.budget_min)} - {formatCurrency(contact.buyer_requests.budget_max)} • {contact.buyer_requests.postcode_districts.join(', ')}
+                                </p>
+                              </div>
                             </div>
-                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                              contact.status === 'read' ? 'bg-green-100 text-green-700' :
-                              contact.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                              'bg-slate-100 text-slate-700'
-                            }`}>
-                              {contact.status}
-                            </span>
+                          ))}
+                      </div>
+                      {selectedContact && (
+                        <div className="lg:sticky lg:top-4 lg:h-[600px] lg:overflow-y-auto">
+                          <div className="bg-white rounded-lg p-6 border border-slate-200 shadow-sm">
+                            <div className="flex justify-between items-start mb-4">
+                              <h3 className="text-lg font-bold text-dark">Message Details</h3>
+                              <button
+                                onClick={() => setSelectedContact(null)}
+                                className="text-slate-400 hover:text-slate-600"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            </div>
+                            <div className="space-y-4">
+                              <div>
+                                <p className="text-xs font-semibold text-slate-500 mb-1">From</p>
+                                <p className="text-sm text-dark">{selectedContact.seller_email}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-500 mb-1">To</p>
+                                <p className="text-sm text-dark">{selectedContact.buyer_requests.profiles?.email || 'Unknown'}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-500 mb-1">Status</p>
+                                <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                                  selectedContact.status === 'read' ? 'bg-green-100 text-green-700' :
+                                  selectedContact.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                  selectedContact.status === 'replied' ? 'bg-blue-100 text-blue-700' :
+                                  'bg-slate-100 text-slate-700'
+                                }`}>
+                                  {selectedContact.status}
+                                </span>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-500 mb-1">Date</p>
+                                <p className="text-sm text-dark">{formatDate(selectedContact.created_at)}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-500 mb-1">Message</p>
+                                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                                  <p className="text-sm text-slate-800 whitespace-pre-wrap">{selectedContact.message}</p>
+                                </div>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-500 mb-1">Buyer Request</p>
+                                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                                  <p className="text-sm text-slate-800">
+                                    <span className="font-medium">Budget:</span> {formatCurrency(selectedContact.buyer_requests.budget_min)} - {formatCurrency(selectedContact.buyer_requests.budget_max)}
+                                  </p>
+                                  <p className="text-sm text-slate-800 mt-1">
+                                    <span className="font-medium">Areas:</span> {selectedContact.buyer_requests.postcode_districts.join(', ')}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      ))}
-                  </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -536,14 +543,20 @@ export default function AdminDashboard() {
                       className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
                     />
                   </div>
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                    {users
-                      .filter(user => 
-                        !searchQuery || 
-                        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        (user.full_name || '').toLowerCase().includes(searchQuery.toLowerCase())
-                      )
-                      .map(user => (
+                  {users.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-600">No users found</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                      {users
+                        .filter(user => 
+                          !searchQuery || 
+                          user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (user.full_name || '').toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .map(user => (
                         <div key={user.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                           <div className="flex justify-between items-start">
                             <div>
@@ -561,7 +574,8 @@ export default function AdminDashboard() {
                           </div>
                         </div>
                       ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
