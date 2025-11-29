@@ -19,24 +19,45 @@ export async function adminGetAllBuyerRequests() {
   await requireAdmin()
   const supabase = await createClient()
   
-  const { data, error } = await supabase
+  // First get all buyer requests
+  const { data: buyerRequests, error: buyerError } = await supabase
     .from('buyer_requests')
-    .select(`
-      *,
-      profiles:user_id (
-        id,
-        email,
-        full_name
-      )
-    `)
+    .select('*')
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching all buyer requests:', error)
-    throw error
+  if (buyerError) {
+    console.error('Error fetching all buyer requests:', buyerError)
+    throw buyerError
   }
 
-  return data as (BuyerRequest & { profiles: Profile | null })[]
+  if (!buyerRequests || buyerRequests.length === 0) {
+    return []
+  }
+
+  // Get unique user IDs
+  const userIds = Array.from(new Set(buyerRequests.map(br => br.user_id).filter(Boolean) as string[]))
+
+  // Fetch profiles for those users
+  let profilesMap = new Map<string, { id: string; email: string; full_name: string | null }>()
+  if (userIds.length > 0) {
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, email, full_name')
+      .in('id', userIds)
+
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError)
+      // Don't throw - just continue without profiles
+    } else if (profiles) {
+      profiles.forEach(p => profilesMap.set(p.id, p))
+    }
+  }
+
+  // Combine the data
+  return buyerRequests.map(br => ({
+    ...br,
+    profiles: br.user_id ? (profilesMap.get(br.user_id) || null) : null
+  })) as (BuyerRequest & { profiles: { id: string; email: string; full_name: string | null } | null })[]
 }
 
 export async function adminUpdateBuyerRequest(id: string, updates: Partial<BuyerRequest>) {
@@ -47,14 +68,7 @@ export async function adminUpdateBuyerRequest(id: string, updates: Partial<Buyer
     .from('buyer_requests')
     .update(updates)
     .eq('id', id)
-    .select(`
-      *,
-      profiles:user_id (
-        id,
-        email,
-        full_name
-      )
-    `)
+    .select('*')
     .single()
 
   if (error) {
@@ -62,7 +76,19 @@ export async function adminUpdateBuyerRequest(id: string, updates: Partial<Buyer
     throw error
   }
 
-  return data as BuyerRequest & { profiles: Profile | null }
+  // Fetch profile if user_id exists
+  let profile: { id: string; email: string; full_name: string | null } | null = null
+  if (data.user_id) {
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('id, email, full_name')
+      .eq('id', data.user_id)
+      .single()
+    
+    profile = profileData || null
+  }
+
+  return { ...data, profiles: profile } as BuyerRequest & { profiles: { id: string; email: string; full_name: string | null } | null }
 }
 
 export async function adminDeleteBuyerRequest(id: string) {
@@ -153,7 +179,8 @@ export async function adminGetAllContacts() {
   await requireAdmin()
   const supabase = await createClient()
   
-  const { data, error } = await supabase
+  // Get all contacts with buyer_requests
+  const { data: contacts, error: contactsError } = await supabase
     .from('contacts')
     .select(`
       *,
@@ -166,28 +193,62 @@ export async function adminGetAllContacts() {
         property_type,
         postcode_districts,
         description,
-        profiles:user_id (
-          id,
-          email,
-          full_name
-        )
-      ),
-      seller_profiles:seller_id (
-        id,
-        email,
-        full_name
+        user_id
       )
     `)
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching all contacts:', error)
-    throw error
+  if (contactsError) {
+    console.error('Error fetching all contacts:', contactsError)
+    throw contactsError
   }
 
-  return data as (Contact & {
-    buyer_requests: any & { profiles: Profile | null }
-    seller_profiles: Profile | null
+  if (!contacts || contacts.length === 0) {
+    return []
+  }
+
+  // Get unique user IDs from buyer_requests and seller_ids
+  const userIds = new Set<string>()
+  contacts.forEach(contact => {
+    if (contact.buyer_requests?.user_id) {
+      userIds.add(contact.buyer_requests.user_id)
+    }
+    if (contact.seller_id) {
+      userIds.add(contact.seller_id)
+    }
+  })
+
+  // Fetch all profiles
+  let profilesMap = new Map<string, { id: string; email: string; full_name: string | null }>()
+  if (userIds.size > 0) {
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, email, full_name')
+      .in('id', Array.from(userIds))
+
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError)
+      // Don't throw - just continue without profiles
+    } else if (profiles) {
+      profiles.forEach(p => profilesMap.set(p.id, p))
+    }
+  }
+
+  // Combine the data
+  return contacts.map(contact => ({
+    ...contact,
+    buyer_requests: contact.buyer_requests ? {
+      ...contact.buyer_requests,
+      profiles: contact.buyer_requests.user_id 
+        ? (profilesMap.get(contact.buyer_requests.user_id) || null)
+        : null
+    } : null,
+    seller_profiles: contact.seller_id 
+      ? (profilesMap.get(contact.seller_id) || null)
+      : null
+  })) as (Contact & {
+    buyer_requests: any & { profiles: { id: string; email: string; full_name: string | null } | null }
+    seller_profiles: { id: string; email: string; full_name: string | null } | null
   })[]
 }
 
