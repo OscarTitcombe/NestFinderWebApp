@@ -267,7 +267,7 @@ export default function AdminDashboard() {
 
           {/* Tabs */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
-            <div className="flex flex-wrap border-b border-slate-200">
+            <div className="flex overflow-x-auto border-b border-slate-200 scrollbar-hide">
               {[
                 { id: 'overview', label: 'Overview', icon: TrendingUp },
                 { id: 'buyer-requests', label: 'Buyer Requests', icon: FileText },
@@ -279,14 +279,14 @@ export default function AdminDashboard() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as TabType)}
-                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                    className={`px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                       activeTab === tab.id
                         ? 'border-nest-mint text-nest-mint'
                         : 'border-transparent text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-4 h-4" />
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       <span>{tab.label}</span>
                     </div>
                   </button>
@@ -294,7 +294,7 @@ export default function AdminDashboard() {
               })}
             </div>
 
-            <div className="p-4 sm:p-6">
+            <div className="p-3 sm:p-4 lg:p-6">
               {/* Overview Tab */}
               {activeTab === 'overview' && (
                 <div className="space-y-6">
@@ -365,7 +365,7 @@ export default function AdminDashboard() {
                       <p className="text-slate-600">No buyer requests found</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 gap-4 max-h-[600px] overflow-y-auto pr-2">
+                    <div className="grid grid-cols-1 gap-3 sm:gap-4 max-h-[600px] overflow-y-auto pr-2">
                       {buyerRequests
                         .filter(br => {
                           if (!br) return false
@@ -382,19 +382,19 @@ export default function AdminDashboard() {
                         .map(request => {
                           if (!request) return null
                           return (
-                            <div key={request.id} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
-                              <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                            <div key={request.id} className="bg-white rounded-xl border border-slate-200 p-3 sm:p-4 lg:p-5 shadow-sm hover:shadow-md transition-shadow">
+                              <div className="flex flex-col lg:flex-row lg:items-start gap-3 sm:gap-4">
                                 {/* Main Content */}
-                                <div className="flex-1 space-y-3">
+                                <div className="flex-1 space-y-3 min-w-0">
                                   {/* Header Row */}
-                                  <div className="flex items-start justify-between gap-3">
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 mb-2">
+                                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3">
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex flex-wrap items-center gap-2 mb-2">
                                         <DollarSign className="w-4 h-4 text-nest-mint flex-shrink-0" />
-                                        <span className="text-lg font-bold text-dark">
+                                        <span className="text-base sm:text-lg font-bold text-dark">
                                           {formatCurrency(request.budget_min)} - {formatCurrency(request.budget_max)}
                                         </span>
-                                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                                        <span className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-xs font-semibold ${
                                           request.status === 'active' ? 'bg-green-100 text-green-700 border border-green-200' :
                                           request.status === 'paused' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
                                           request.status === 'fulfilled' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
@@ -405,16 +405,16 @@ export default function AdminDashboard() {
                                       </div>
                                       
                                       {/* Property Details */}
-                                      <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600">
                                         <div className="flex items-center gap-1.5">
-                                          <Home className="w-4 h-4 text-slate-400" />
+                                          <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 flex-shrink-0" />
                                           <span>{request.beds_min} {request.beds_min === 1 ? 'bed' : 'beds'}</span>
-                                          <span className="text-slate-300">•</span>
+                                          <span className="text-slate-300 hidden sm:inline">•</span>
                                           <span className="capitalize">{request.property_type}</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5">
-                                          <MapPin className="w-4 h-4 text-slate-400" />
-                                          <span className="max-w-[200px] truncate">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 flex-shrink-0" />
+                                          <span className="max-w-[150px] sm:max-w-[200px] truncate">
                                             {Array.isArray(request.postcode_districts) ? request.postcode_districts.join(', ') : ''}
                                           </span>
                                         </div>
@@ -422,11 +422,11 @@ export default function AdminDashboard() {
                                     </div>
                                     
                                     {/* Actions */}
-                                    <div className="flex gap-2 flex-shrink-0">
+                                    <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
                                       <select
                                         value={request.status}
                                         onChange={(e) => handleUpdateStatus(request.id, e.target.value)}
-                                        className="text-xs border border-slate-200 rounded-lg px-3 py-1.5 bg-white hover:bg-slate-50 transition-colors font-medium"
+                                        className="text-xs border border-slate-200 rounded-lg px-2 sm:px-3 py-1.5 bg-white hover:bg-slate-50 transition-colors font-medium"
                                       >
                                         <option value="active">Active</option>
                                         <option value="paused">Paused</option>
@@ -438,7 +438,7 @@ export default function AdminDashboard() {
                                         className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                         title="Delete"
                                       >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                       </button>
                                     </div>
                                   </div>
@@ -451,17 +451,17 @@ export default function AdminDashboard() {
                                   )}
 
                                   {/* Footer Info */}
-                                  <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-100">
-                                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                      <Mail className="w-3.5 h-3.5" />
-                                      <span className="truncate max-w-[200px]">{request.profiles?.email || request.email}</span>
+                                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-2 border-t border-slate-100">
+                                    <div className="flex items-center gap-1.5 text-xs text-slate-500 min-w-0">
+                                      <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                                      <span className="truncate max-w-[150px] sm:max-w-[200px]">{request.profiles?.email || request.email}</span>
                                     </div>
                                     <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                      <Calendar className="w-3.5 h-3.5" />
-                                      <span>Posted {formatDate(request.created_at)}</span>
+                                      <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                                      <span className="whitespace-nowrap">Posted {formatDate(request.created_at)}</span>
                                     </div>
                                     {request.profiles?.full_name && (
-                                      <div className="text-xs text-slate-500">
+                                      <div className="text-xs text-slate-500 truncate">
                                         <span className="font-medium">User:</span> {request.profiles.full_name}
                                       </div>
                                     )}
@@ -509,9 +509,9 @@ export default function AdminDashboard() {
                       <p className="text-slate-600">No messages found</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                       {/* Messages List */}
-                      <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                      <div className={`space-y-3 ${selectedContact ? 'max-h-[400px] sm:max-h-[600px]' : 'max-h-[600px]'} overflow-y-auto pr-2`}>
                         {contacts
                           .filter(contact => {
                             if (!contact) return false
@@ -537,7 +537,7 @@ export default function AdminDashboard() {
                                   : 'border-slate-200 hover:border-slate-300'
                               }`}
                             >
-                              <div className="p-4">
+                              <div className="p-3 sm:p-4">
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-3">
                                   <div className="flex-1 min-w-0">
@@ -599,8 +599,8 @@ export default function AdminDashboard() {
 
                       {/* Message Detail Panel */}
                       {selectedContact && (
-                        <div className="lg:sticky lg:top-4 lg:h-[600px] lg:overflow-y-auto">
-                          <div className="bg-white rounded-xl border border-slate-200 shadow-lg p-6">
+                        <div className="lg:sticky lg:top-4 lg:h-[600px] lg:overflow-y-auto mt-4 lg:mt-0">
+                          <div className="bg-white rounded-xl border border-slate-200 shadow-lg p-4 sm:p-6">
                             <div className="flex justify-between items-start mb-6">
                               <div>
                                 <h3 className="text-xl font-bold text-dark mb-1">Message Details</h3>
@@ -734,10 +734,11 @@ export default function AdminDashboard() {
                           setSelectedUserId(null)
                           setActiveTab('buyer-requests')
                         }}
-                        className="px-3 py-2 text-sm bg-nest-mint text-white rounded-lg hover:bg-nest-mintHover transition-colors flex items-center gap-2"
+                        className="px-3 py-2 text-xs sm:text-sm bg-nest-mint text-white rounded-lg hover:bg-nest-mintHover transition-colors flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
                       >
-                        <Eye className="w-4 h-4" />
-                        View Requests
+                        <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">View Requests</span>
+                        <span className="sm:hidden">View</span>
                       </button>
                     )}
                   </div>
@@ -777,8 +778,8 @@ export default function AdminDashboard() {
                             </div>
 
                             {/* Right Side - Stats */}
-                            <div className="flex items-center gap-6 sm:gap-8">
-                              <div className="text-center">
+                            <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8">
+                              <div className="text-center flex-1 sm:flex-none min-w-[80px]">
                                 <div className="flex items-center justify-center gap-1 mb-1">
                                   <FileText className="w-4 h-4 text-nest-mint" />
                                   <span className="text-lg font-bold text-dark">{user.buyerRequestCount || 0}</span>
@@ -790,24 +791,24 @@ export default function AdminDashboard() {
                                   </p>
                                 )}
                               </div>
-                              <div className="text-center">
+                              <div className="text-center flex-1 sm:flex-none min-w-[80px]">
                                 <div className="flex items-center justify-center gap-1 mb-1">
                                   <Mail className="w-4 h-4 text-nest-mint" />
                                   <span className="text-lg font-bold text-dark">{user.messageCount || 0}</span>
                                 </div>
                                 <p className="text-xs text-slate-500">Messages Sent</p>
                               </div>
-                              <div>
+                              <div className="w-full sm:w-auto">
                                 <button
                                   onClick={() => {
                                     setSelectedUserId(user.id)
                                     setActiveTab('buyer-requests')
                                   }}
-                                  className="px-4 py-2 text-sm bg-nest-mint/10 text-nest-mint rounded-lg hover:bg-nest-mint/20 transition-colors font-medium flex items-center justify-center gap-2 whitespace-nowrap"
+                                  className="w-full sm:w-auto px-3 sm:px-4 py-2 text-xs sm:text-sm bg-nest-mint/10 text-nest-mint rounded-lg hover:bg-nest-mint/20 transition-colors font-medium flex items-center justify-center gap-2"
                                   disabled={!user.buyerRequestCount || user.buyerRequestCount === 0}
                                 >
-                                  <Eye className="w-4 h-4" />
-                                  View Requests
+                                  <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                  <span className="sm:inline">View Requests</span>
                                 </button>
                               </div>
                             </div>
