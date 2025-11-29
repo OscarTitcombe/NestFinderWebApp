@@ -1,38 +1,16 @@
 import { createClient } from './client'
 
-export async function signInWithEmail(email: string) {
-  const supabase = createClient()
-  
-  const { data, error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${window.location.origin}/verify`,
-      shouldCreateUser: true,
-    },
-  })
-
-  if (error) {
-    console.error('Error signing in:', error)
-    throw error
-  }
-
-  return data
-}
-
 // Request OTP code (6-digit code that works cross-device)
 export async function requestOtpCode(email: string) {
   const supabase = createClient()
   
   // Request OTP without emailRedirectTo - Supabase will send a 6-digit code
-  // Note: This requires Supabase to be configured to send codes (not just links)
-  // In Supabase Dashboard: Authentication > Email Templates > Magic Link
-  // Make sure "Enable email OTP" is enabled
+  // This works cross-device and is more reliable than magic links
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       shouldCreateUser: true,
-      // Don't set emailRedirectTo - this tells Supabase to send a code
-      // If emailRedirectTo is set, it sends a magic link instead
+      // Don't set emailRedirectTo - this tells Supabase to send a code instead of a link
     },
   })
 
