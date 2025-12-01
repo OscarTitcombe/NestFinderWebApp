@@ -11,9 +11,11 @@ import { Loader2 } from 'lucide-react'
 
 interface QuizAnswers {
   propertyType: string
-  budget: string
   bedrooms: string
+  propertyCondition: string
+  budget: string
   timeframe: string
+  motivation: string
   features: string[]
 }
 
@@ -55,16 +57,49 @@ function QuizPageContent() {
         
         // Map quiz answers to database format
         const priceRanges: Record<string, { min: number; max: number }> = {
-          'under-300k': { min: 0, max: 300000 },
-          '300k-500k': { min: 300000, max: 500000 },
+          'under-200k': { min: 0, max: 200000 },
+          '200k-350k': { min: 200000, max: 350000 },
+          '350k-500k': { min: 350000, max: 500000 },
           '500k-750k': { min: 500000, max: 750000 },
           '750k-1m': { min: 750000, max: 1000000 },
           'over-1m': { min: 1000000, max: 10000000 },
-          'any-budget': { min: 0, max: 10000000 }
+          'any-budget': { min: 0, max: 10000000 },
+          // Legacy support for old price ranges
+          'under-250k': { min: 0, max: 250000 },
+          '250k-400k': { min: 250000, max: 400000 },
+          '400k-600k': { min: 400000, max: 600000 },
+          '600k-800k': { min: 600000, max: 800000 },
+          '800k-1m': { min: 800000, max: 1000000 }
         }
         
-        const priceRange = priceRanges[quizAnswers.budget] || { min: 0, max: 10000000 }
-        const bedrooms = quizAnswers.bedrooms === '0' ? null : parseInt(quizAnswers.bedrooms) || null
+        // Handle price - if it's a number string (from slider), use it directly; otherwise use range mapping
+        let priceRange = { min: 0, max: 10000000 }
+        if (quizAnswers.budget) {
+          const priceNum = parseInt(quizAnswers.budget)
+          if (!isNaN(priceNum) && priceNum > 0 && !quizAnswers.budget.includes('-') && !quizAnswers.budget.includes('k') && !quizAnswers.budget.includes('m')) {
+            // Direct price value from slider - create a range around it (±15%)
+            priceRange = {
+              min: Math.max(0, Math.floor(priceNum * 0.85)),
+              max: Math.ceil(priceNum * 1.15)
+            }
+          } else {
+            // Try range mapping for legacy values
+            priceRange = priceRanges[quizAnswers.budget] || { min: 0, max: 10000000 }
+          }
+        }
+        
+        // Handle bedrooms - "7" means "7+" in the UI
+        const bedrooms = quizAnswers.bedrooms === '' ? null : parseInt(quizAnswers.bedrooms) || null
+        
+        // Combine property condition and motivation into features array for storage
+        // (since schema doesn't have separate fields, we'll store them as features)
+        const allFeatures = [...quizAnswers.features]
+        if (quizAnswers.propertyCondition) {
+          allFeatures.push(`condition:${quizAnswers.propertyCondition}`)
+        }
+        if (quizAnswers.motivation) {
+          allFeatures.push(`motivation:${quizAnswers.motivation}`)
+        }
         
         await createSellerProperty({
           postcode_district: normalizedPostcode,
@@ -73,7 +108,7 @@ function QuizPageContent() {
           expected_price_max: priceRange.max,
           bedrooms: bedrooms,
           timeframe: quizAnswers.timeframe as 'immediately' | '1-3-months' | '3-6-months' | '6-12-months' | 'just-browsing' | null,
-          features: quizAnswers.features.length > 0 ? quizAnswers.features : null,
+          features: allFeatures.length > 0 ? allFeatures : null,
           status: 'active'
         })
       } catch (err: any) {
@@ -86,9 +121,11 @@ function QuizPageContent() {
     const params = new URLSearchParams({
       postcode: normalizedPostcode!,
       propertyType: quizAnswers!.propertyType,
-      budget: quizAnswers!.budget,
       bedrooms: quizAnswers!.bedrooms,
+      propertyCondition: quizAnswers!.propertyCondition || '',
+      budget: quizAnswers!.budget,
       timeframe: quizAnswers!.timeframe,
+      motivation: quizAnswers!.motivation || '',
       features: quizAnswers!.features.join(',')
     })
     
