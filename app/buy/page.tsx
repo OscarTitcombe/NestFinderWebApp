@@ -237,7 +237,7 @@ export default function BuyPage() {
     if (!trimmed) return
 
     const result = normalizePostcode(trimmed)
-    if (result.ok) {
+    if (result.ok && result.district) {
       const district = result.district
       if (!postcodeTags.includes(district)) {
         setPostcodeTags([...postcodeTags, district])
