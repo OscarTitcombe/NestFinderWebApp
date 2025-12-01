@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const validatedData = contactSchema.parse(body)
     
     // Create Supabase client
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Insert contact submission
     const { data, error } = await supabase
