@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { adminGetAllBuyerRequests, adminUpdateBuyerRequest, adminDeleteBuyerRequest } from '@/lib/supabase/admin-queries'
+import { 
+  adminGetAllContactSubmissions, 
+  adminUpdateContactSubmission, 
+  adminDeleteContactSubmission 
+} from '@/lib/supabase/admin-queries'
 
 export async function GET() {
   try {
-    const requests = await adminGetAllBuyerRequests()
-    return NextResponse.json(requests)
+    const submissions = await adminGetAllContactSubmissions()
+    return NextResponse.json(submissions)
   } catch (error: any) {
-    console.error('Error fetching buyer requests:', error)
+    console.error('Error fetching contact submissions:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch buyer requests' },
+      { error: error.message || 'Failed to fetch contact submissions' },
       { status: 401 }
     )
   }
@@ -17,12 +21,12 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   try {
     const { id, ...updates } = await request.json()
-    const updated = await adminUpdateBuyerRequest(id, updates)
+    const updated = await adminUpdateContactSubmission(id, updates)
     return NextResponse.json(updated)
   } catch (error: any) {
-    console.error('Error updating buyer request:', error)
+    console.error('Error updating contact submission:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to update buyer request' },
+      { error: error.message || 'Failed to update contact submission' },
       { status: 401 }
     )
   }
@@ -40,17 +44,14 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    await adminDeleteBuyerRequest(id)
+    await adminDeleteContactSubmission(id)
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error deleting buyer request:', error)
+    console.error('Error deleting contact submission:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to delete buyer request' },
+      { error: error.message || 'Failed to delete contact submission' },
       { status: 401 }
     )
   }
 }
-
-
-
 

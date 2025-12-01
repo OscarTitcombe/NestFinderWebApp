@@ -15,7 +15,9 @@ import {
   Calendar,
   DollarSign,
   ExternalLink,
-  Eye
+  Eye,
+  User,
+  MessageSquare
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -27,6 +29,7 @@ interface Stats {
   users: { total: number }
   buyerRequests: { total: number; active: number }
   contacts: { total: number; unread: number }
+  contactSubmissions: { total: number; new: number }
 }
 
 interface BuyerRequest {
@@ -62,7 +65,19 @@ interface Contact {
   seller_profiles: { id: string; email: string; full_name: string | null } | null
 }
 
-type TabType = 'overview' | 'buyer-requests' | 'messages' | 'users'
+interface ContactSubmission {
+  id: string
+  name: string
+  email: string
+  message: string
+  status: string
+  admin_notes: string | null
+  created_at: string
+  updated_at: string
+  resolved_at: string | null
+}
+
+type TabType = 'overview' | 'buyer-requests' | 'messages' | 'users' | 'contact-submissions'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -72,11 +87,14 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [buyerRequests, setBuyerRequests] = useState<BuyerRequest[]>([])
   const [contacts, setContacts] = useState<Contact[]>([])
+  const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([])
   const [users, setUsers] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [buyerStatusFilter, setBuyerStatusFilter] = useState<string>('all')
+  const [contactSubmissionFilter, setContactSubmissionFilter] = useState<string>('all')
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  const [selectedContactSubmission, setSelectedContactSubmission] = useState<ContactSubmission | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -94,11 +112,12 @@ export default function AdminDashboard() {
     try {
       setIsLoading(true)
       
-      const [statsRes, buyerRes, contactsRes, usersRes] = await Promise.all([
+      const [statsRes, buyerRes, contactsRes, usersRes, contactSubmissionsRes] = await Promise.all([
         fetch('/api/admin/stats'),
         fetch('/api/admin/buyer-requests'),
         fetch('/api/admin/contacts'),
-        fetch('/api/admin/users')
+        fetch('/api/admin/users'),
+        fetch('/api/admin/contact-submissions')
       ])
 
       // Check each response for errors
@@ -123,12 +142,17 @@ export default function AdminDashboard() {
         const errorData = await usersRes.json()
         throw new Error(errorData.error || 'Failed to load users')
       }
+      if (!contactSubmissionsRes.ok) {
+        const errorData = await contactSubmissionsRes.json()
+        throw new Error(errorData.error || 'Failed to load contact submissions')
+      }
 
-      const [statsData, buyerData, contactsData, usersData] = await Promise.all([
+      const [statsData, buyerData, contactsData, usersData, contactSubmissionsData] = await Promise.all([
         statsRes.json(),
         buyerRes.json(),
         contactsRes.json(),
-        usersRes.json()
+        usersRes.json(),
+        contactSubmissionsRes.json()
       ])
 
       // Check if any response contains an error
@@ -136,12 +160,14 @@ export default function AdminDashboard() {
       if (buyerData?.error) throw new Error(buyerData.error)
       if (contactsData?.error) throw new Error(contactsData.error)
       if (usersData?.error) throw new Error(usersData.error)
+      if (contactSubmissionsData?.error) throw new Error(contactSubmissionsData.error)
 
       // Ensure arrays are set (even if empty) and handle null/undefined
       setStats(statsData || null)
       setBuyerRequests(Array.isArray(buyerData) ? buyerData : [])
       setContacts(Array.isArray(contactsData) ? contactsData : [])
       setUsers(Array.isArray(usersData) ? usersData : [])
+      setContactSubmissions(Array.isArray(contactSubmissionsData) ? contactSubmissionsData : [])
     } catch (error: any) {
       console.error('Error loading admin data:', error)
       toast.showToast(error.message || 'Failed to load admin data', 'error')
@@ -192,6 +218,54 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleUpdateContactSubmissionStatus = async (id: string, newStatus: string, adminNotes?: string) => {
+    try {
+      const updates: any = { id, status: newStatus }
+      if (adminNotes !== undefined) {
+        updates.admin_notes = adminNotes
+      }
+      if (newStatus === 'resolved') {
+        updates.resolved_at = new Date().toISOString()
+      }
+      
+      const res = await fetch('/api/admin/contact-submissions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      })
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to update')
+      }
+      await loadData()
+      toast.showToast('Contact submission updated', 'success')
+    } catch (error: any) {
+      toast.showToast(error.message || 'Failed to update', 'error')
+    }
+  }
+
+  const handleDeleteContactSubmission = (id: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Contact Submission',
+      message: 'Are you sure you want to delete this contact submission? This action cannot be undone.',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/contact-submissions?id=${id}`, { method: 'DELETE' })
+          if (!res.ok) throw new Error('Failed to delete')
+          await loadData()
+          setSelectedContactSubmission(null)
+          toast.showToast('Contact submission deleted', 'success')
+        } catch (error: any) {
+          toast.showToast(error.message || 'Failed to delete', 'error')
+        } finally {
+          setConfirmDialog({ ...confirmDialog, isOpen: false })
+        }
+      }
+    })
+  }
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
@@ -238,7 +312,7 @@ export default function AdminDashboard() {
 
           {/* Stats Cards */}
           {stats && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
               <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs text-slate-600">Total Users</p>
@@ -262,6 +336,14 @@ export default function AdminDashboard() {
                 <p className="text-2xl font-bold text-dark">{stats.contacts.total}</p>
                 <p className="text-xs text-slate-500 mt-1">{stats.contacts.unread} unread</p>
               </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-slate-600">Contact Forms</p>
+                  <Mail className="w-5 h-5 text-nest-mint" />
+                </div>
+                <p className="text-2xl font-bold text-dark">{stats.contactSubmissions.total}</p>
+                <p className="text-xs text-slate-500 mt-1">{stats.contactSubmissions.new} new</p>
+              </div>
             </div>
           )}
 
@@ -272,6 +354,7 @@ export default function AdminDashboard() {
                 { id: 'overview', label: 'Overview', icon: TrendingUp },
                 { id: 'buyer-requests', label: 'Buyer Requests', icon: FileText },
                 { id: 'messages', label: 'Messages', icon: Mail },
+                { id: 'contact-submissions', label: 'Contact Forms', icon: Mail },
                 { id: 'users', label: 'Users', icon: Users }
               ].map(tab => {
                 const Icon = tab.icon
@@ -706,6 +789,255 @@ export default function AdminDashboard() {
                                     </div>
                                   </div>
                                 </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Contact Submissions Tab */}
+              {activeTab === 'contact-submissions' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
+                    <div className="flex-1 flex items-center gap-2">
+                      <Search className="w-4 h-4 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder="Search contact submissions..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      />
+                    </div>
+                    <select
+                      value={contactSubmissionFilter}
+                      onChange={(e) => setContactSubmissionFilter(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="new">New</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="archived">Archived</option>
+                    </select>
+                  </div>
+                  {!contactSubmissions || contactSubmissions.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Mail className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-600">No contact submissions found</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+                      {/* Submissions List */}
+                      <div className={`space-y-3 ${selectedContactSubmission ? 'max-h-[400px] sm:max-h-[600px]' : 'max-h-[600px]'} overflow-y-auto pr-2`}>
+                        {contactSubmissions
+                          .filter(submission => {
+                            if (!submission) return false
+                            const matchesSearch = !searchQuery || 
+                              (submission.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (submission.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (submission.message || '').toLowerCase().includes(searchQuery.toLowerCase())
+                            const matchesStatus = contactSubmissionFilter === 'all' || submission.status === contactSubmissionFilter
+                            return matchesSearch && matchesStatus
+                          })
+                          .map(submission => {
+                            if (!submission) return null
+                            const isNew = submission.status === 'new'
+                            return (
+                            <div 
+                              key={submission.id} 
+                              onClick={() => setSelectedContactSubmission(submission)}
+                              className={`bg-white rounded-xl border cursor-pointer transition-all hover:shadow-md ${
+                                selectedContactSubmission?.id === submission.id 
+                                  ? 'border-nest-mint bg-nest-mint/5 shadow-lg ring-2 ring-nest-mint/20' 
+                                  : isNew
+                                  ? 'border-slate-200 hover:border-nest-mint/50'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="p-3 sm:p-4">
+                                {/* Header */}
+                                <div className="flex items-start justify-between mb-3">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <User className={`w-4 h-4 flex-shrink-0 ${isNew ? 'text-nest-mint' : 'text-slate-400'}`} />
+                                      <p className="font-bold text-dark truncate">
+                                        {submission.name}
+                                      </p>
+                                      {isNew && (
+                                        <span className="w-2 h-2 bg-nest-mint rounded-full flex-shrink-0"></span>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
+                                      <Mail className="w-3 h-3" />
+                                      <span className="truncate">{submission.email}</span>
+                                    </div>
+                                  </div>
+                                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0 ml-2 ${
+                                    submission.status === 'resolved' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                    submission.status === 'new' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                                    submission.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                                    'bg-slate-100 text-slate-700 border border-slate-200'
+                                  }`}>
+                                    {submission.status === 'in_progress' ? 'In Progress' : submission.status}
+                                  </span>
+                                </div>
+
+                                {/* Message Preview */}
+                                <div className="bg-slate-50 rounded-lg p-3 border border-slate-100 mb-3">
+                                  <p className="text-sm text-slate-700 line-clamp-3 leading-relaxed">
+                                    {submission.message}
+                                  </p>
+                                </div>
+
+                                {/* Date */}
+                                <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  <span>{formatDate(submission.created_at)}</span>
+                                </div>
+                              </div>
+                            </div>
+                            )
+                          })
+                          .filter(Boolean)}
+                      </div>
+
+                      {/* Submission Detail Panel */}
+                      {selectedContactSubmission && (
+                        <div className="lg:sticky lg:top-4 lg:h-[600px] lg:overflow-y-auto mt-4 lg:mt-0">
+                          <div className="bg-white rounded-xl border border-slate-200 shadow-lg p-4 sm:p-6">
+                            <div className="flex justify-between items-start mb-6">
+                              <div>
+                                <h3 className="text-xl font-bold text-dark mb-1">Submission Details</h3>
+                                <p className="text-xs text-slate-500">Contact form submission</p>
+                              </div>
+                              <button
+                                onClick={() => setSelectedContactSubmission(null)}
+                                className="text-slate-400 hover:text-slate-600 transition-colors p-1 hover:bg-slate-100 rounded-lg"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            </div>
+
+                            <div className="space-y-5">
+                              {/* Name */}
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <User className="w-4 h-4 text-nest-mint" />
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</p>
+                                </div>
+                                <p className="text-sm font-medium text-dark bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                  {selectedContactSubmission.name}
+                                </p>
+                              </div>
+
+                              {/* Email */}
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Mail className="w-4 h-4 text-nest-mint" />
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</p>
+                                </div>
+                                <p className="text-sm font-medium text-dark bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                  {selectedContactSubmission.email}
+                                </p>
+                              </div>
+
+                              {/* Status */}
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <TrendingUp className="w-4 h-4 text-nest-mint" />
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</p>
+                                </div>
+                                <select
+                                  value={selectedContactSubmission.status}
+                                  onChange={(e) => handleUpdateContactSubmissionStatus(selectedContactSubmission.id, e.target.value)}
+                                  className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white hover:bg-slate-50 transition-colors font-medium w-full"
+                                >
+                                  <option value="new">New</option>
+                                  <option value="in_progress">In Progress</option>
+                                  <option value="resolved">Resolved</option>
+                                  <option value="archived">Archived</option>
+                                </select>
+                              </div>
+
+                              {/* Dates */}
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Calendar className="w-4 h-4 text-nest-mint" />
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Submitted</p>
+                                </div>
+                                <p className="text-sm text-dark bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                  {formatDate(selectedContactSubmission.created_at)}
+                                </p>
+                              </div>
+
+                              {selectedContactSubmission.resolved_at && (
+                                <div>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Calendar className="w-4 h-4 text-nest-mint" />
+                                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Resolved</p>
+                                  </div>
+                                  <p className="text-sm text-dark bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                    {formatDate(selectedContactSubmission.resolved_at)}
+                                  </p>
+                                </div>
+                              )}
+
+                              {/* Message Content */}
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <MessageSquare className="w-4 h-4 text-nest-mint" />
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Message</p>
+                                </div>
+                                <div className="bg-nest-sageBg rounded-lg p-4 border border-nest-line">
+                                  <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">
+                                    {selectedContactSubmission.message}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Admin Notes */}
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <FileText className="w-4 h-4 text-nest-mint" />
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Admin Notes</p>
+                                </div>
+                                <textarea
+                                  value={selectedContactSubmission.admin_notes || ''}
+                                  onChange={(e) => {
+                                    setSelectedContactSubmission({
+                                      ...selectedContactSubmission,
+                                      admin_notes: e.target.value
+                                    })
+                                  }}
+                                  onBlur={(e) => {
+                                    if (e.target.value !== selectedContactSubmission.admin_notes) {
+                                      handleUpdateContactSubmissionStatus(
+                                        selectedContactSubmission.id,
+                                        selectedContactSubmission.status,
+                                        e.target.value
+                                      )
+                                    }
+                                  }}
+                                  placeholder="Add internal notes..."
+                                  rows={4}
+                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm resize-none"
+                                />
+                              </div>
+
+                              {/* Delete Button */}
+                              <div className="pt-4 border-t border-slate-200">
+                                <button
+                                  onClick={() => handleDeleteContactSubmission(selectedContactSubmission.id)}
+                                  className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Delete Submission
+                                </button>
                               </div>
                             </div>
                           </div>

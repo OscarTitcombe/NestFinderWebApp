@@ -5,6 +5,7 @@ import type { Database } from '@/lib/types/database'
 type BuyerRequest = Database['public']['Tables']['buyer_requests']['Row']
 type SellerProperty = Database['public']['Tables']['seller_properties']['Row']
 type Contact = Database['public']['Tables']['contacts']['Row']
+type ContactSubmission = Database['public']['Tables']['contact_submissions']['Row']
 type Profile = Database['public']['Tables']['profiles']['Row']
 
 /**
@@ -374,6 +375,59 @@ export async function adminUpdateUser(id: string, updates: Partial<Profile>) {
   return data as Profile
 }
 
+// ============ Contact Submissions ============
+
+export async function adminGetAllContactSubmissions() {
+  await requireAdmin()
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('contact_submissions')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching all contact submissions:', error)
+    throw error
+  }
+
+  return (data || []) as ContactSubmission[]
+}
+
+export async function adminUpdateContactSubmission(id: string, updates: Partial<ContactSubmission>) {
+  await requireAdmin()
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('contact_submissions')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating contact submission:', error)
+    throw error
+  }
+
+  return data as ContactSubmission
+}
+
+export async function adminDeleteContactSubmission(id: string) {
+  await requireAdmin()
+  const supabase = await createClient()
+  
+  const { error } = await supabase
+    .from('contact_submissions')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Error deleting contact submission:', error)
+    throw error
+  }
+}
+
 // ============ Statistics ============
 
 export async function adminGetStats() {
@@ -385,13 +439,17 @@ export async function adminGetStats() {
     { count: totalBuyerRequests },
     { count: activeBuyerRequests },
     { count: totalContacts },
-    { count: unreadContacts }
+    { count: unreadContacts },
+    { count: totalContactSubmissions },
+    { count: newContactSubmissions }
   ] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('buyer_requests').select('*', { count: 'exact', head: true }),
     supabase.from('buyer_requests').select('*', { count: 'exact', head: true }).eq('status', 'active'),
     supabase.from('contacts').select('*', { count: 'exact', head: true }),
-    supabase.from('contacts').select('*', { count: 'exact', head: true }).in('status', ['pending', 'sent'])
+    supabase.from('contacts').select('*', { count: 'exact', head: true }).in('status', ['pending', 'sent']),
+    supabase.from('contact_submissions').select('*', { count: 'exact', head: true }),
+    supabase.from('contact_submissions').select('*', { count: 'exact', head: true }).eq('status', 'new')
   ])
 
   return {
@@ -405,6 +463,10 @@ export async function adminGetStats() {
     contacts: {
       total: totalContacts || 0,
       unread: unreadContacts || 0
+    },
+    contactSubmissions: {
+      total: totalContactSubmissions || 0,
+      new: newContactSubmissions || 0
     }
   }
 }

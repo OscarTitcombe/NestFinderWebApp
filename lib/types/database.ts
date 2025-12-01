@@ -164,6 +164,41 @@ export interface Database {
           updated_at?: string
         }
       }
+      contact_submissions: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          message: string
+          status: 'new' | 'in_progress' | 'resolved' | 'archived'
+          admin_notes: string | null
+          created_at: string
+          updated_at: string
+          resolved_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          message: string
+          status?: 'new' | 'in_progress' | 'resolved' | 'archived'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          message?: string
+          status?: 'new' | 'in_progress' | 'resolved' | 'archived'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+        }
+      }
     }
   }
 }

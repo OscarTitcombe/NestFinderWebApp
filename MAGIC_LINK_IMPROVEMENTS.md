@@ -95,3 +95,4 @@ Consider adding:
 - Automatic retry with exponential backoff
 - Better email service provider (if Supabase emails are unreliable)
 
+
