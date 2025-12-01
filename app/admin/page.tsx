@@ -1029,8 +1029,24 @@ export default function AdminDashboard() {
                                 />
                               </div>
 
-                              {/* Delete Button */}
-                              <div className="pt-4 border-t border-slate-200">
+                              {/* Action Buttons */}
+                              <div className="pt-4 border-t border-slate-200 space-y-3">
+                                {/* Reply via Email Button */}
+                                <a
+                                  href={`mailto:${selectedContactSubmission.email}?subject=${encodeURIComponent(`Re: Your message to NestFinder`)}&body=${encodeURIComponent(`Hi ${selectedContactSubmission.name},\n\nThank you for contacting us.\n\n---\nOriginal message:\n${selectedContactSubmission.message}`)}`}
+                                  className="w-full px-4 py-2 text-sm font-medium text-white bg-nest-mint hover:bg-nest-mintHover rounded-lg transition-colors flex items-center justify-center gap-2"
+                                  onClick={() => {
+                                    // Mark as in progress when clicking reply
+                                    if (selectedContactSubmission.status === 'new') {
+                                      handleUpdateContactSubmissionStatus(selectedContactSubmission.id, 'in_progress')
+                                    }
+                                  }}
+                                >
+                                  <Mail className="w-4 h-4" />
+                                  Reply via Email
+                                </a>
+
+                                {/* Delete Button */}
                                 <button
                                   onClick={() => handleDeleteContactSubmission(selectedContactSubmission.id)}
                                   className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center justify-center gap-2"

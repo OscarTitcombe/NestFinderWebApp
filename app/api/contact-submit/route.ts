@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
+import { rateLimit, getClientIdentifier } from '@/lib/rate-limit'
 
 // Validation schema
 const contactSchema = z.object({
@@ -11,15 +12,38 @@ const contactSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting - allow 3 submissions per 15 minutes per IP
+    const clientId = getClientIdentifier(request)
+    const rateLimitResult = rateLimit(`contact-form:${clientId}`, {
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      maxRequests: 3
+    })
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.message },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     
     // Validate input
     const validatedData = contactSchema.parse(body)
     
-    // Create Supabase client
-    const supabase = await createClient()
+    // Create anonymous Supabase client (works without authentication)
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return [] },
+          setAll() {}
+        }
+      }
+    )
     
-    // Insert contact submission
+    // Insert contact submission (RLS policy allows anonymous inserts)
     const { data, error } = await supabase
       .from('contact_submissions')
       .insert([
@@ -45,7 +69,8 @@ export async function POST(request: NextRequest) {
       { 
         success: true, 
         message: 'Contact form submitted successfully',
-        id: data.id 
+        id: data.id,
+        remaining: rateLimitResult.remaining
       },
       { status: 201 }
     )

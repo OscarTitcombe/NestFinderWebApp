@@ -57,9 +57,14 @@ export default function ContactPage() {
         body: JSON.stringify(data)
       })
       
+      const responseData = await response.json()
+      
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to submit contact form')
+        // Handle rate limiting specifically
+        if (response.status === 429) {
+          throw new Error(responseData.error || 'Too many submissions. Please try again later.')
+        }
+        throw new Error(responseData.error || 'Failed to submit contact form')
       }
       
       setIsSubmitted(true)
@@ -110,8 +115,11 @@ export default function ContactPage() {
             <h1 className="text-3xl sm:text-4xl font-bold text-dark mb-4">
               Contact us
             </h1>
-            <p className="text-lg text-slate-600">
+            <p className="text-lg text-slate-600 mb-3">
               Have a question or need help? We'd love to hear from you.
+            </p>
+            <p className="text-sm text-slate-500">
+              No account needed — just fill out the form below and we'll get back to you soon.
             </p>
           </div>
 

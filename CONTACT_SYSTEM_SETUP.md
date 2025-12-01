@@ -126,10 +126,13 @@ SELECT * FROM contact_submissions LIMIT 1;
 ## Features
 
 ### Public-Facing Features
-- Clean, validated contact form
-- Real-time validation with Zod
-- Success/error feedback
+- **No account required** - Anyone can submit the contact form
+- Clean, validated contact form with Zod validation
+- **Rate limiting** - 3 submissions per 15 minutes per IP address
+- Real-time validation feedback
+- Success/error feedback with specific messages
 - Character counter for message field
+- Clear messaging that no sign-in is needed
 
 ### Admin Features
 - View all contact submissions
@@ -137,36 +140,68 @@ SELECT * FROM contact_submissions LIMIT 1;
 - Search by name, email, or message content
 - Click to view full details
 - Update status with dropdown
-- Add internal admin notes
-- Delete submissions
+- Add internal admin notes (auto-saves on blur)
+- **Reply via email** - Opens email client with pre-filled response
+- Delete submissions with confirmation
 - Visual indicators for new submissions
 - Responsive design for all screen sizes
+- Automatic status update to "in progress" when replying
 
 ## Status Workflow
 
 Recommended workflow for handling submissions:
 
 1. **New** → Submission just received
-2. **In Progress** → Admin is working on it
+2. **In Progress** → Admin is working on it (automatically set when clicking "Reply via Email")
 3. **Resolved** → Issue handled (automatically sets `resolved_at` timestamp)
 4. **Archived** → No longer needed in active view
 
+## Email Reply Feature
+
+The admin dashboard includes a "Reply via Email" button that:
+
+1. Opens your default email client (Gmail, Outlook, Apple Mail, etc.)
+2. Pre-fills the recipient with the contact's email address
+3. Includes a professional subject line: "Re: Your message to NestFinder"
+4. Quotes the original message for context
+5. Automatically updates the submission status to "In Progress" (if it was "New")
+
+**Example pre-filled email:**
+```
+To: contact@example.com
+Subject: Re: Your message to NestFinder
+
+Hi John Doe,
+
+Thank you for contacting us.
+
+---
+Original message:
+I have a question about your service...
+```
+
+You can then customize the message before sending from your email client.
+
 ## Security Notes
 
-- Public users can only INSERT contact submissions
+- **Anonymous submissions allowed** - Public users can INSERT without authentication
+- **Rate limiting active** - 3 submissions per 15 minutes per IP address
 - Only authenticated admin users can read, update, or delete
 - All admin operations verify admin status server-side
 - Input validation with Zod prevents malicious data
-- Rate limiting should be added to the public API route (future enhancement)
+- Uses anonymous Supabase client for public submissions
+- RLS policies enforce all security rules at database level
 
 ## Next Steps (Optional Enhancements)
 
 1. **Email Notifications:** Send email to admin when new submission arrives
-2. **Rate Limiting:** Add rate limiting to prevent spam
-3. **Email Integration:** Reply to contacts directly from dashboard
+2. **Enhanced Rate Limiting:** Use Redis (Upstash) for distributed rate limiting across multiple servers
+3. **Email Templates:** Create predefined response templates
 4. **Analytics:** Track response times and resolution rates
 5. **Categories:** Add category field for different types of inquiries
 6. **Attachments:** Allow file uploads with submissions
+7. **Export:** Add ability to export submissions to CSV
+8. **Bulk Actions:** Select multiple submissions for bulk status updates
 
 ## Troubleshooting
 
@@ -177,8 +212,22 @@ Recommended workflow for handling submissions:
 
 ### Contact Form Not Submitting
 - Check browser console for errors
-- Verify API route is accessible
+- Verify API route is accessible at `/api/contact-submit`
 - Check Supabase connection and RLS policies
+- Verify environment variables are set correctly
+
+### "Rate limit exceeded" Error
+- This is normal security behavior
+- Users are limited to 3 submissions per 15 minutes
+- Wait 15 minutes and try again
+- Rate limits reset automatically
+- For testing, restart your dev server to clear in-memory rate limits
+
+### Email Reply Button Not Working
+- Ensure you have a default email client configured
+- Check that the contact's email address is valid
+- Some browsers may block the `mailto:` link - try a different browser
+- Mobile devices should prompt to choose an email app
 
 ### Admin Dashboard Not Loading
 - Verify you're logged in
